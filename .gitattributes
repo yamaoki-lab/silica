@@ -1,0 +1,10 @@
+# 改行を LF に揃える. Windows で取り出しても, 手元と CI で結果が変わらないようにする.
+* text=auto eol=lf
+
+# git diff の各塊の見出しに, どの節の変更かを出す.
+*.css  diff=css
+*.html diff=html
+*.md   diff=markdown
+
+# 自動で作られるので, GitHub の差分では畳む.
+pnpm-lock.yaml linguist-generated=true
