@@ -1,7 +1,7 @@
 {
   "name": "silica",
   "version": "0.0.0",
-  "description": "Web の画面の枠組み. 窓の管理, メニュー, 見た目を持ち, アプリを差し込んで使う",
+  "description": "Web の画面の枠組み. ウインドウの管理, メニュー, 見た目を持ち, アプリケーションを差し込んで使う",
   "license": "MIT",
   "repository": {
     "type": "git",

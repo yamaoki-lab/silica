@@ -34,7 +34,7 @@
       "rules": {
         "no-restricted-imports": ["error", {
           "patterns": [
-            { "regex": "(^|/)apps(/|$)", "message": "view は付属のアプリを知らない." },
+            { "regex": "(^|/)apps(/|$)", "message": "view は付属のアプリケーションを知らない." },
             { "regex": "^\\.\\./index(\\.ts)?$", "message": "入口は view を使う側. view から入口を import しない." }
           ]
         }]
@@ -45,7 +45,7 @@
       "rules": {
         "no-restricted-imports": ["error", {
           "patterns": [
-            { "regex": "(^|/)(agate|view|passion)(/|$)", "message": "付属のアプリも外のアプリと同じく, 公開の入口 (src/index.ts) だけを使う." }
+            { "regex": "(^|/)(agate|view|passion)(/|$)", "message": "付属のアプリケーションも外のアプリケーションと同じく, 公開の入口 (src/index.ts) だけを使う." }
           ]
         }]
       }
