@@ -10,6 +10,10 @@ export default defineConfig({
     // silica の package.json の silica-source の条件で, dist を作らずにソースを読む.
     conditions: ['silica-source', ...defaultClientConditions],
   },
+  server: {
+    // 同じネットワークの他の端末からも見られるよう, 全てのアドレスで待ち受ける.
+    host: true,
+  },
   build: {
     target: 'esnext',
     rolldownOptions: {
