@@ -16,12 +16,12 @@
   ],
   "exports": {
     ".": {
-      "source": "./src/index.ts",
+      "silica-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./apps": {
-      "source": "./src/apps/index.ts",
+      "silica-source": "./src/apps/index.ts",
       "types": "./dist/apps/index.d.ts",
       "default": "./dist/apps/index.js"
     }
@@ -39,6 +39,7 @@
     }
   },
   "scripts": {
+    "dev": "pnpm --filter silica-example dev",
     "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc -b",
     "lint": "oxlint",
