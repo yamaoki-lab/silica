@@ -38,9 +38,11 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "lint": "oxlint"
   },
   "devDependencies": {
+    "oxlint": "^1.85.0",
     "typescript": "^7.0.2"
   }
 }

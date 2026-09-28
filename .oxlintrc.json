@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/agate/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)(view|passion|apps)(/|$)", "message": "agate は他の層を知らない." },
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "agate は他の層を知らない." },
+            { "group": ["@react-spectrum/*"], "message": "agate は見た目を持たない. 見た目は passion に置く." }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/passion/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)(agate|view|apps)(/|$)", "message": "passion は他の層を知らない." },
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "passion は他の層を知らない." }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/view/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)apps(/|$)", "message": "view は付属のアプリを知らない." },
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "入口は view を使う側. view から入口を import しない." }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/apps/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)(agate|view|passion)(/|$)", "message": "付属のアプリも外のアプリと同じく, 公開の入口 (src/index.ts) だけを使う." }
+          ]
+        }]
+      }
+    }
+  ]
+}
