@@ -1,0 +1,55 @@
+{
+  "name": "silica",
+  "version": "0.0.0",
+  "description": "Web の画面の枠組み. ウインドウの管理, メニュー, 見た目を持ち, アプリケーションを差し込んで使う",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yamaoki-lab/silica.git"
+  },
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "pnpm@12.6.0",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "silica-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./apps": {
+      "silica-source": "./src/apps/index.ts",
+      "types": "./dist/apps/index.d.ts",
+      "default": "./dist/apps/index.js"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./apps": {
+        "types": "./dist/apps/index.d.ts",
+        "default": "./dist/apps/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "dev": "pnpm --filter silica-example dev",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -b",
+    "lint": "oxlint",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "oxlint": "^1.85.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}
