@@ -40,8 +40,13 @@
     "expected": { "x": 400, "y": 300, "width": 400, "height": 300 }
   },
   {
-    "name": "奇数の大きさでは半分を切り捨て, 右と下は領域の端に揃える",
+    "name": "奇数の大きさでは左上が半分を切り捨てた大きさになる",
+    "input": { "position": "top-left", "container": { "width": 801, "height": 601 } },
+    "expected": { "x": 0, "y": 0, "width": 400, "height": 300 }
+  },
+  {
+    "name": "奇数の大きさでは右下が余りの 1px を持ち, 左上との間に隙間を空けない",
     "input": { "position": "bottom-right", "container": { "width": 801, "height": 601 } },
-    "expected": { "x": 401, "y": 301, "width": 400, "height": 300 }
+    "expected": { "x": 400, "y": 300, "width": 401, "height": 301 }
   }
 ]

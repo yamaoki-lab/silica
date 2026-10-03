@@ -67,26 +67,29 @@ export function computeMovedPosition(
 export type TilePosition = 'left' | 'right' | 'top' | 'bottom' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 // ウインドウを置く領域を2分割か4分割した位置に, ちょうど収まる bounds を計算する.
+// 大きさが奇数の時は, 余りの 1px を右と下に寄せ, 間に隙間を空けない.
 export function computeTiledBounds(position: TilePosition, container: ContainerSize): Bounds {
-  const halfWidth = Math.floor(container.width / 2);
-  const halfHeight = Math.floor(container.height / 2);
+  const leftWidth = Math.floor(container.width / 2);
+  const topHeight = Math.floor(container.height / 2);
+  const rightWidth = container.width - leftWidth;
+  const bottomHeight = container.height - topHeight;
   switch (position) {
     case 'left':
-      return { x: 0, y: 0, width: halfWidth, height: container.height };
+      return { x: 0, y: 0, width: leftWidth, height: container.height };
     case 'right':
-      return { x: container.width - halfWidth, y: 0, width: halfWidth, height: container.height };
+      return { x: leftWidth, y: 0, width: rightWidth, height: container.height };
     case 'top':
-      return { x: 0, y: 0, width: container.width, height: halfHeight };
+      return { x: 0, y: 0, width: container.width, height: topHeight };
     case 'bottom':
-      return { x: 0, y: container.height - halfHeight, width: container.width, height: halfHeight };
+      return { x: 0, y: topHeight, width: container.width, height: bottomHeight };
     case 'top-left':
-      return { x: 0, y: 0, width: halfWidth, height: halfHeight };
+      return { x: 0, y: 0, width: leftWidth, height: topHeight };
     case 'top-right':
-      return { x: container.width - halfWidth, y: 0, width: halfWidth, height: halfHeight };
+      return { x: leftWidth, y: 0, width: rightWidth, height: topHeight };
     case 'bottom-left':
-      return { x: 0, y: container.height - halfHeight, width: halfWidth, height: halfHeight };
+      return { x: 0, y: topHeight, width: leftWidth, height: bottomHeight };
     case 'bottom-right':
-      return { x: container.width - halfWidth, y: container.height - halfHeight, width: halfWidth, height: halfHeight };
+      return { x: leftWidth, y: topHeight, width: rightWidth, height: bottomHeight };
   }
 }
 
