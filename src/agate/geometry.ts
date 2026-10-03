@@ -1,5 +1,6 @@
 import type { Bounds, ContainerSize, ResizeEdge } from './types.ts';
 
+// ウインドウ (タイトルバーを含む全体) の既定の最小の大きさ. アプリケーションごとに変えられる.
 export const MIN_WINDOW_WIDTH = 200;
 export const MIN_WINDOW_HEIGHT = 120;
 
@@ -18,7 +19,7 @@ export function computeResizedBounds(
   edge: ResizeEdge,
   totalDx: number,
   totalDy: number,
-  // アプリケーションごとに, より大きい最小の大きさを指定する時に使う.
+  // アプリケーションごとに最小の大きさを変える時に使う.
   minWidth: number = MIN_WINDOW_WIDTH,
   minHeight: number = MIN_WINDOW_HEIGHT,
 ): Bounds {

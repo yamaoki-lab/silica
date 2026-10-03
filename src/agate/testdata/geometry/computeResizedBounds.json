@@ -45,8 +45,13 @@
     "expected": { "x": 100, "y": 180, "width": 300, "height": 120 }
   },
   {
-    "name": "アプリケーションごとの最小の大きさで止まる",
+    "name": "アプリケーションごとの最小の大きさは既定より大きくもできる",
     "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "se", "totalDx": -100, "totalDy": -100, "minWidth": 250, "minHeight": 150 },
     "expected": { "x": 100, "y": 100, "width": 250, "height": 150 }
+  },
+  {
+    "name": "アプリケーションごとの最小の大きさは既定より小さくもできる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "se", "totalDx": -250, "totalDy": -150, "minWidth": 100, "minHeight": 40 },
+    "expected": { "x": 100, "y": 100, "width": 100, "height": 50 }
   }
 ]
