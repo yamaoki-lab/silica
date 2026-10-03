@@ -1,9 +1,11 @@
 // 場面は testdata/geometry/ の JSON に, 名前と入力と期待する結果の組で書く. ここでは流すだけにする.
 import { describe, expect, test } from 'vitest';
-import { computeMovedPosition, computeResizedBounds } from './geometry.ts';
+import { computeCenteredPosition, computeMovedPosition, computeResizedBounds, computeTiledBounds, type TilePosition } from './geometry.ts';
 import type { Bounds, ContainerSize, ResizeEdge } from './types.ts';
+import centeredPositionCases from './testdata/geometry/computeCenteredPosition.json' with { type: 'json' };
 import movedPositionCases from './testdata/geometry/computeMovedPosition.json' with { type: 'json' };
 import resizedBoundsCases from './testdata/geometry/computeResizedBounds.json' with { type: 'json' };
+import tiledBoundsCases from './testdata/geometry/computeTiledBounds.json' with { type: 'json' };
 
 interface Case<Input, Expected> {
   name: string;
@@ -26,5 +28,19 @@ describe('computeMovedPosition', () => {
   test.for(movedPositionCases as Case<Input, Point>[])('$name', ({ input, expected }) => {
     const { start, windowWidth, container, totalDx, totalDy } = input;
     expect(computeMovedPosition(start, windowWidth, container, totalDx, totalDy)).toEqual(expected);
+  });
+});
+
+describe('computeTiledBounds', () => {
+  type Input = { position: TilePosition; container: ContainerSize };
+  test.for(tiledBoundsCases as Case<Input, Bounds>[])('$name', ({ input, expected }) => {
+    expect(computeTiledBounds(input.position, input.container)).toEqual(expected);
+  });
+});
+
+describe('computeCenteredPosition', () => {
+  type Input = { size: { width: number; height: number }; container: ContainerSize };
+  test.for(centeredPositionCases as Case<Input, Point>[])('$name', ({ input, expected }) => {
+    expect(computeCenteredPosition(input.size, input.container)).toEqual(expected);
   });
 });

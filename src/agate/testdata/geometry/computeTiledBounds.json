@@ -1,0 +1,47 @@
+[
+  {
+    "name": "左半分",
+    "input": { "position": "left", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 0, "y": 0, "width": 400, "height": 600 }
+  },
+  {
+    "name": "右半分",
+    "input": { "position": "right", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 400, "y": 0, "width": 400, "height": 600 }
+  },
+  {
+    "name": "上半分",
+    "input": { "position": "top", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 0, "y": 0, "width": 800, "height": 300 }
+  },
+  {
+    "name": "下半分",
+    "input": { "position": "bottom", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 0, "y": 300, "width": 800, "height": 300 }
+  },
+  {
+    "name": "左上の4分の1",
+    "input": { "position": "top-left", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 0, "y": 0, "width": 400, "height": 300 }
+  },
+  {
+    "name": "右上の4分の1",
+    "input": { "position": "top-right", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 400, "y": 0, "width": 400, "height": 300 }
+  },
+  {
+    "name": "左下の4分の1",
+    "input": { "position": "bottom-left", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 0, "y": 300, "width": 400, "height": 300 }
+  },
+  {
+    "name": "右下の4分の1",
+    "input": { "position": "bottom-right", "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 400, "y": 300, "width": 400, "height": 300 }
+  },
+  {
+    "name": "奇数の大きさでは半分を切り捨て, 右と下は領域の端に揃える",
+    "input": { "position": "bottom-right", "container": { "width": 801, "height": 601 } },
+    "expected": { "x": 401, "y": 301, "width": 400, "height": 300 }
+  }
+]

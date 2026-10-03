@@ -63,3 +63,40 @@ export function computeMovedPosition(
   const y = Math.min(maxY, Math.max(minY, start.y + totalDy));
   return { x, y };
 }
+
+export type TilePosition = 'left' | 'right' | 'top' | 'bottom' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+// ウインドウを置く領域を2分割か4分割した位置に, ちょうど収まる bounds を計算する.
+export function computeTiledBounds(position: TilePosition, container: ContainerSize): Bounds {
+  const halfWidth = Math.floor(container.width / 2);
+  const halfHeight = Math.floor(container.height / 2);
+  switch (position) {
+    case 'left':
+      return { x: 0, y: 0, width: halfWidth, height: container.height };
+    case 'right':
+      return { x: container.width - halfWidth, y: 0, width: halfWidth, height: container.height };
+    case 'top':
+      return { x: 0, y: 0, width: container.width, height: halfHeight };
+    case 'bottom':
+      return { x: 0, y: container.height - halfHeight, width: container.width, height: halfHeight };
+    case 'top-left':
+      return { x: 0, y: 0, width: halfWidth, height: halfHeight };
+    case 'top-right':
+      return { x: container.width - halfWidth, y: 0, width: halfWidth, height: halfHeight };
+    case 'bottom-left':
+      return { x: 0, y: container.height - halfHeight, width: halfWidth, height: halfHeight };
+    case 'bottom-right':
+      return { x: container.width - halfWidth, y: container.height - halfHeight, width: halfWidth, height: halfHeight };
+  }
+}
+
+// 中央に置く. 大きさはそのままで, 領域の中央に来る位置を計算する.
+// ウインドウが領域より大きい時に単に中央に合わせると, タイトルバーが
+// メニューバーの裏や領域の外に出てしまうので, ドラッグと同じ切り詰めを重ねる.
+export function computeCenteredPosition(
+  size: { width: number; height: number },
+  container: ContainerSize,
+): { x: number; y: number } {
+  const raw = { x: (container.width - size.width) / 2, y: (container.height - size.height) / 2 };
+  return computeMovedPosition(raw, size.width, container, 0, 0);
+}
