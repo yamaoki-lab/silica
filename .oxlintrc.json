@@ -7,6 +7,44 @@
   },
   "overrides": [
     {
+      "files": ["src/**"],
+      "rules": {
+        "no-restricted-globals": ["error",
+          { "name": "document", "message": "要素の ownerDocument から辿る. ウインドウを別の文書へ切り離せるようにするため." },
+          { "name": "window", "message": "要素の ownerDocument.defaultView から辿る. ウインドウを別の文書へ切り離せるようにするため." },
+          { "name": "self", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "top", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "parent", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "frames", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "opener", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "location", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "history", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "screen", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "visualViewport", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "innerWidth", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "innerHeight", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "outerWidth", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "outerHeight", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "scrollX", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "scrollY", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "devicePixelRatio", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "getComputedStyle", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "getSelection", "message": "要素の ownerDocument から辿る." },
+          { "name": "matchMedia", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "requestAnimationFrame", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "cancelAnimationFrame", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "requestIdleCallback", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "cancelIdleCallback", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "addEventListener", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "removeEventListener", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "dispatchEvent", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "print", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "focus", "message": "要素の ownerDocument.defaultView から辿る." },
+          { "name": "blur", "message": "要素の ownerDocument.defaultView から辿る." }
+        ]
+      }
+    },
+    {
       "files": ["src/agate/**"],
       "rules": {
         "no-restricted-imports": ["error", {
