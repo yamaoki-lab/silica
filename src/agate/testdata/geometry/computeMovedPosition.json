@@ -1,0 +1,27 @@
+[
+  {
+    "name": "領域の中ではポインタの動きのとおりに動く",
+    "input": { "start": { "x": 100, "y": 100 }, "windowWidth": 300, "container": { "width": 800, "height": 600 }, "totalDx": 50, "totalDy": 20 },
+    "expected": { "x": 150, "y": 120 }
+  },
+  {
+    "name": "左へ出しても右端の 40px は領域に残る",
+    "input": { "start": { "x": 100, "y": 100 }, "windowWidth": 300, "container": { "width": 800, "height": 600 }, "totalDx": -500, "totalDy": 0 },
+    "expected": { "x": -260, "y": 100 }
+  },
+  {
+    "name": "右へ出しても左端の 40px は領域に残る",
+    "input": { "start": { "x": 100, "y": 100 }, "windowWidth": 300, "container": { "width": 800, "height": 600 }, "totalDx": 1000, "totalDy": 0 },
+    "expected": { "x": 760, "y": 100 }
+  },
+  {
+    "name": "上へは出さずタイトルバーを隠さない",
+    "input": { "start": { "x": 100, "y": 100 }, "windowWidth": 300, "container": { "width": 800, "height": 600 }, "totalDx": 0, "totalDy": -500 },
+    "expected": { "x": 100, "y": 0 }
+  },
+  {
+    "name": "下へ出しても上端の 40px は領域に残る",
+    "input": { "start": { "x": 100, "y": 100 }, "windowWidth": 300, "container": { "width": 800, "height": 600 }, "totalDx": 0, "totalDy": 1000 },
+    "expected": { "x": 100, "y": 560 }
+  }
+]

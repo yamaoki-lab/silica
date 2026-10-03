@@ -1,0 +1,52 @@
+[
+  {
+    "name": "東の辺は横の動きだけを拾って幅を広げる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "e", "totalDx": 50, "totalDy": 30 },
+    "expected": { "x": 100, "y": 100, "width": 350, "height": 200 }
+  },
+  {
+    "name": "南の辺は縦の動きだけを拾って高さを広げる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "s", "totalDx": 40, "totalDy": 60 },
+    "expected": { "x": 100, "y": 100, "width": 300, "height": 260 }
+  },
+  {
+    "name": "西の辺を左へ引くと右端を保って広がる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "w", "totalDx": -50, "totalDy": 0 },
+    "expected": { "x": 50, "y": 100, "width": 350, "height": 200 }
+  },
+  {
+    "name": "北の辺を上へ引くと下端を保って広がる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "n", "totalDx": 0, "totalDy": -40 },
+    "expected": { "x": 100, "y": 60, "width": 300, "height": 240 }
+  },
+  {
+    "name": "南東の角は幅と高さを両方変える",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "se", "totalDx": 20, "totalDy": 10 },
+    "expected": { "x": 100, "y": 100, "width": 320, "height": 210 }
+  },
+  {
+    "name": "北西の角は右下の角を保つ",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "nw", "totalDx": 30, "totalDy": 20 },
+    "expected": { "x": 130, "y": 120, "width": 270, "height": 180 }
+  },
+  {
+    "name": "東の辺で縮めても既定の最小の幅で止まる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "e", "totalDx": -250, "totalDy": 0 },
+    "expected": { "x": 100, "y": 100, "width": 200, "height": 200 }
+  },
+  {
+    "name": "西の辺で縮めて最小の幅に達すると右端を保って止まる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "w", "totalDx": 250, "totalDy": 0 },
+    "expected": { "x": 200, "y": 100, "width": 200, "height": 200 }
+  },
+  {
+    "name": "北の辺で縮めて最小の高さに達すると下端を保って止まる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "n", "totalDx": 0, "totalDy": 150 },
+    "expected": { "x": 100, "y": 180, "width": 300, "height": 120 }
+  },
+  {
+    "name": "アプリケーションごとの最小の大きさで止まる",
+    "input": { "start": { "x": 100, "y": 100, "width": 300, "height": 200 }, "edge": "se", "totalDx": -100, "totalDy": -100, "minWidth": 250, "minHeight": 150 },
+    "expected": { "x": 100, "y": 100, "width": 250, "height": 150 }
+  }
+]
