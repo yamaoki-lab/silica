@@ -1,0 +1,83 @@
+[
+  {
+    "name": "領域の大きさが変わらなければ動かない",
+    "input": {
+      "win": { "x": 120, "y": 80, "width": 300, "height": 200 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 800, "height": 600 }
+    },
+    "expected": { "x": 120, "y": 80 }
+  },
+  {
+    "name": "左上の端に付いたウインドウは端に付いたまま",
+    "input": {
+      "win": { "x": 0, "y": 0, "width": 200, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 1000, "height": 900 }
+    },
+    "expected": { "x": 0, "y": 0 }
+  },
+  {
+    "name": "右下の端に付いたウインドウは端に付いたまま",
+    "input": {
+      "win": { "x": 600, "y": 500, "width": 200, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 1000, "height": 900 }
+    },
+    "expected": { "x": 800, "y": 800 }
+  },
+  {
+    "name": "中央のウインドウは領域が広がっても縮んでも中央のまま",
+    "input": {
+      "win": { "x": 300, "y": 250, "width": 200, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 1000, "height": 400 }
+    },
+    "expected": { "x": 400, "y": 150 }
+  },
+  {
+    "name": "端と中央の間では, 両端の離れ方の比で基準点を決め, その割合を保つ",
+    "input": {
+      "win": { "x": 100, "y": 50, "width": 300, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 1600, "height": 600 }
+    },
+    "expected": { "x": 260, "y": 50 }
+  },
+  {
+    "name": "左にはみ出たウインドウは, 領域が広がっても隠れた量を保ち, 奥へ飛ばない",
+    "input": {
+      "win": { "x": -100, "y": 0, "width": 300, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 1600, "height": 600 }
+    },
+    "expected": { "x": -100, "y": 0 }
+  },
+  {
+    "name": "右にはみ出たウインドウは, 領域が縮んでも右端からはみ出た量を保つ",
+    "input": {
+      "win": { "x": 700, "y": 0, "width": 300, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 400, "height": 600 }
+    },
+    "expected": { "x": 300, "y": 0 }
+  },
+  {
+    "name": "領域より大きく両側にはみ出たウインドウは, 見えている範囲の中心を基準点にする",
+    "input": {
+      "win": { "x": -100, "y": 0, "width": 1000, "height": 100 },
+      "oldContainer": { "width": 800, "height": 600 },
+      "newContainer": { "width": 1000, "height": 600 }
+    },
+    "expected": { "x": 0, "y": 0 }
+  },
+  {
+    "name": "元の領域の大きさが 0 の時は動かさない",
+    "input": {
+      "win": { "x": 10, "y": 20, "width": 300, "height": 200 },
+      "oldContainer": { "width": 0, "height": 600 },
+      "newContainer": { "width": 800, "height": 600 }
+    },
+    "expected": { "x": 10, "y": 20 }
+  }
+]

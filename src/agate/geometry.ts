@@ -64,6 +64,56 @@ export function computeMovedPosition(
   return { x, y };
 }
 
+/**
+ * 1つの軸 (x か y) について, 領域の大きさが変わった時の置き直し後の位置を計算する.
+ * ウインドウの両端がそれぞれの領域の端からどれだけ離れているかの比 r で,
+ * ウインドウのどこを基準点にするかを連続的に決める
+ * (0 は始端が領域の端に付いていて基準点は始端, 1 は終端が付いていて基準点は終端,
+ * 0.5 は両端が等しく離れていて基準点は中心. その間は連続的に補う).
+ * 基準点の領域に対する割合を保ったまま, 新しい領域の大きさに合わせて基準点を動かし,
+ * そこから逆算してウインドウの位置を求める.
+ *
+ * ウインドウが領域からはみ出している時に, 隠れている部分の座標をそのまま使うと,
+ * 領域が広がった時にその座標まで拡大されてさらに奥へ飛んでいく.
+ * そのため基準点は領域の中に見えている範囲だけから決める (はみ出た側は領域の端に
+ * 付いているとみなす). 隠れている分 (ウインドウの始端から基準点までの距離) は保ったまま,
+ * 新しい領域での基準点の位置から逆算する.
+ */
+function computeAxisReposition(
+  start: number,
+  size: number,
+  oldContainerSize: number,
+  newContainerSize: number,
+): number {
+  const visibleStart = Math.min(Math.max(start, 0), oldContainerSize);
+  const visibleEnd = Math.min(Math.max(start + size, 0), oldContainerSize);
+  const visibleSize = visibleEnd - visibleStart;
+  const startGap = visibleStart;
+  const endGap = oldContainerSize - visibleEnd;
+  const totalGap = startGap + endGap;
+  const r = totalGap > 0 ? Math.min(1, Math.max(0, startGap / totalGap)) : 0.5;
+  const anchorOld = visibleStart + r * visibleSize;
+  const anchorOffset = anchorOld - start;
+  const anchorNew = (anchorOld / oldContainerSize) * newContainerSize;
+  return anchorNew - anchorOffset;
+}
+
+// ブラウザのウインドウのリサイズ等で領域の大きさが変わった時に, 各ウインドウを
+// 自身の基準点を保ったまま相対的に動かした位置を計算する (大きさは変えない).
+export function computeProportionalReposition(
+  win: Bounds,
+  oldContainer: ContainerSize,
+  newContainer: ContainerSize,
+): { x: number; y: number } {
+  if (oldContainer.width <= 0 || oldContainer.height <= 0) {
+    return { x: win.x, y: win.y };
+  }
+  return {
+    x: computeAxisReposition(win.x, win.width, oldContainer.width, newContainer.width),
+    y: computeAxisReposition(win.y, win.height, oldContainer.height, newContainer.height),
+  };
+}
+
 export type TilePosition = 'left' | 'right' | 'top' | 'bottom' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 // ウインドウを置く領域を2分割か4分割した位置に, ちょうど収まる bounds を計算する.
