@@ -206,29 +206,46 @@ export function computeCascadeBounds(
   return result;
 }
 
-// 周回する (右端に達して左上へ戻る) たびに, 再び始める位置をこの分だけずらす.
-// 毎回同じ位置から始めると, 1周目と2周目以降が完全に重なってしまうため.
+// 折り返す (端に達して始めの側へ戻る) たびに, 戻る位置をこの分だけずらす.
+// 毎回同じ位置へ戻ると, 1周目と2周目以降が完全に重なってしまうため.
 const LAP_OFFSET = CASCADE_STEP / 2;
 
+// 1つの軸について, 次に開く位置と, その軸で折り返した回数を計算する.
+// ずらした先でウインドウが領域からはみ出すなら, 既定の位置から折り返した回数の分
+// ずらした位置へ戻る. 戻る位置でもはみ出すなら, 領域の端へ戻り, 数え直す.
+function computeNextAxisPosition(
+  last: number,
+  defaultStart: number,
+  size: number,
+  containerSize: number,
+  lap: number,
+): { start: number; lap: number } {
+  const next = last + CASCADE_STEP;
+  if (next + size <= containerSize) {
+    return { start: next, lap };
+  }
+  const wrapped = defaultStart + (lap + 1) * LAP_OFFSET;
+  if (wrapped + size <= containerSize) {
+    return { start: wrapped, lap: lap + 1 };
+  }
+  return { start: 0, lap: 0 };
+}
+
 // 同じアプリケーションの2つ目以降のウインドウを開く位置. 直前に開いた位置から
-// 右下へ CASCADE_STEP の分ずらす. 右端に寄りすぎてタイトルバーを掴めなくなりそうな
-// 時は, そのアプリケーションの既定の位置 (defaultPosition, 1つ目のウインドウの位置)
-// まで戻ってカスケードをやり直す (周回のたびに LAP_OFFSET の分ずらした位置から
-// 始めるので, 前の周と重ならない). 縦は右端のような判定に使わないので,
-// 念のため最後にドラッグと同じ切り詰めを重ねる.
+// 右下へ CASCADE_STEP の分ずらす. 右端や下端からはみ出す時は, はみ出す軸だけを
+// そのアプリケーションの既定の位置 (defaultPosition, 1つ目のウインドウの位置) の側へ戻す.
+// 軸ごとに別々に折り返し, 戻る位置も軸ごとに LAP_OFFSET ずつずらすので,
+// 端に貼り付かず, 周ごとに違う斜めの列に並ぶ. 領域より大きいウインドウのために,
+// 最後にドラッグと同じ切り詰めを重ねる.
 export function computeNextOpenPosition(
   lastPosition: { x: number; y: number },
   defaultPosition: { x: number; y: number },
   size: { width: number; height: number },
   container: ContainerSize,
-  lap: number,
-): { position: { x: number; y: number }; lap: number } {
-  const next = { x: lastPosition.x + CASCADE_STEP, y: lastPosition.y + CASCADE_STEP };
-  const reachedRightEdge = next.x > container.width - MIN_VISIBLE_MARGIN;
-  const nextLap = reachedRightEdge ? lap + 1 : lap;
-  const raw = reachedRightEdge
-    ? { x: defaultPosition.x + nextLap * LAP_OFFSET, y: defaultPosition.y + nextLap * LAP_OFFSET }
-    : next;
-  const position = computeMovedPosition(raw, size.width, container, 0, 0);
-  return { position, lap: nextLap };
+  laps: { x: number; y: number },
+): { position: { x: number; y: number }; laps: { x: number; y: number } } {
+  const x = computeNextAxisPosition(lastPosition.x, defaultPosition.x, size.width, container.width, laps.x);
+  const y = computeNextAxisPosition(lastPosition.y, defaultPosition.y, size.height, container.height, laps.y);
+  const position = computeMovedPosition({ x: x.start, y: y.start }, size.width, container, 0, 0);
+  return { position, laps: { x: x.lap, y: y.lap } };
 }

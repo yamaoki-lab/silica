@@ -6,52 +6,74 @@
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
-      "lap": 0
+      "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 132, "y": 132 }, "lap": 0 }
+    "expected": { "position": { "x": 132, "y": 132 }, "laps": { "x": 0, "y": 0 } }
   },
   {
-    "name": "ずらした先がちょうど右端の余白の位置なら, まだ戻らない",
+    "name": "ずらした先で右端にちょうど収まるなら, まだ折り返さない",
     "input": {
-      "lastPosition": { "x": 928, "y": 100 },
+      "lastPosition": { "x": 568, "y": 100 },
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
-      "lap": 0
+      "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 960, "y": 132 }, "lap": 0 }
+    "expected": { "position": { "x": 600, "y": 132 }, "laps": { "x": 0, "y": 0 } }
   },
   {
-    "name": "右端の余白を越えたら既定の位置へ戻り, 周回の分だけずらす",
+    "name": "右端からはみ出すなら横だけ既定の位置の側へ戻り, 折り返した回数の分ずらす",
     "input": {
-      "lastPosition": { "x": 940, "y": 200 },
+      "lastPosition": { "x": 600, "y": 100 },
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
-      "lap": 0
+      "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 116, "y": 116 }, "lap": 1 }
+    "expected": { "position": { "x": 116, "y": 132 }, "laps": { "x": 1, "y": 0 } }
   },
   {
-    "name": "2周目の終わりでは, 既定の位置から2周分ずらす",
+    "name": "下端からはみ出すなら縦だけ既定の位置の側へ戻り, 下端に貼り付かない",
     "input": {
-      "lastPosition": { "x": 950, "y": 300 },
+      "lastPosition": { "x": 300, "y": 500 },
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
-      "lap": 1
+      "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 132, "y": 132 }, "lap": 2 }
+    "expected": { "position": { "x": 332, "y": 116 }, "laps": { "x": 0, "y": 1 } }
   },
   {
-    "name": "下端では周回せず, タイトルバーを領域の中に残す",
+    "name": "折り返した回数は軸ごとに数える",
     "input": {
-      "lastPosition": { "x": 100, "y": 740 },
+      "lastPosition": { "x": 600, "y": 500 },
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
-      "lap": 0
+      "laps": { "x": 2, "y": 0 }
     },
-    "expected": { "position": { "x": 132, "y": 760 }, "lap": 0 }
+    "expected": { "position": { "x": 148, "y": 116 }, "laps": { "x": 3, "y": 1 } }
+  },
+  {
+    "name": "戻る位置でもはみ出すなら, 領域の端へ戻って数え直す",
+    "input": {
+      "lastPosition": { "x": 600, "y": 100 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "laps": { "x": 31, "y": 0 }
+    },
+    "expected": { "position": { "x": 0, "y": 132 }, "laps": { "x": 0, "y": 0 } }
+  },
+  {
+    "name": "領域より幅の広いウインドウは横にずらさない",
+    "input": {
+      "lastPosition": { "x": 0, "y": 100 },
+      "defaultPosition": { "x": 0, "y": 100 },
+      "size": { "width": 1200, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "laps": { "x": 0, "y": 0 }
+    },
+    "expected": { "position": { "x": 0, "y": 132 }, "laps": { "x": 0, "y": 0 } }
   }
 ]

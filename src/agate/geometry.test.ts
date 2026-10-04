@@ -74,9 +74,10 @@ describe('computeCascadeBounds', () => {
 });
 
 describe('computeNextOpenPosition', () => {
-  type Input = { lastPosition: Point; defaultPosition: Point; size: { width: number; height: number }; container: ContainerSize; lap: number };
-  test.for(nextOpenPositionCases as Case<Input, { position: Point; lap: number }>[])('$name', ({ input, expected }) => {
-    const { lastPosition, defaultPosition, size, container, lap } = input;
-    expect(computeNextOpenPosition(lastPosition, defaultPosition, size, container, lap)).toEqual(expected);
+  type Laps = { x: number; y: number };
+  type Input = { lastPosition: Point; defaultPosition: Point; size: { width: number; height: number }; container: ContainerSize; laps: Laps };
+  test.for(nextOpenPositionCases as Case<Input, { position: Point; laps: Laps }>[])('$name', ({ input, expected }) => {
+    const { lastPosition, defaultPosition, size, container, laps } = input;
+    expect(computeNextOpenPosition(lastPosition, defaultPosition, size, container, laps)).toEqual(expected);
   });
 });
