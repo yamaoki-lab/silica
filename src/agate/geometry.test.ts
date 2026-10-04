@@ -9,6 +9,8 @@ import {
   computeProportionalReposition,
   computeResizedBounds,
   computeTiledBounds,
+  goldenLapOffset,
+  halfLapOffset,
   type TilePosition,
 } from './geometry.ts';
 import type { Bounds, ContainerSize, ResizeEdge } from './types.ts';
@@ -19,6 +21,7 @@ import nextOpenPositionCases from './testdata/geometry/computeNextOpenPosition.j
 import proportionalRepositionCases from './testdata/geometry/computeProportionalReposition.json' with { type: 'json' };
 import resizedBoundsCases from './testdata/geometry/computeResizedBounds.json' with { type: 'json' };
 import tiledBoundsCases from './testdata/geometry/computeTiledBounds.json' with { type: 'json' };
+import lapOffsetCases from './testdata/geometry/lapOffset.json' with { type: 'json' };
 
 interface Case<Input, Expected> {
   name: string;
@@ -27,6 +30,10 @@ interface Case<Input, Expected> {
 }
 
 type Point = { x: number; y: number };
+
+// 関数は JSON に書けないので, 組み込みのずれの関数は名前で書き, ここで関数に戻す.
+const lapOffsets = { halfLapOffset, goldenLapOffset };
+type LapOffsetName = keyof typeof lapOffsets;
 
 describe('computeResizedBounds', () => {
   type Input = { start: Bounds; edge: ResizeEdge; totalDx: number; totalDy: number; minWidth?: number; minHeight?: number };
@@ -66,18 +73,27 @@ describe('computeCenteredPosition', () => {
 });
 
 describe('computeCascadeBounds', () => {
-  type Input = { windows: CascadeWindow[]; container: ContainerSize };
+  type Input = { windows: CascadeWindow[]; container: ContainerSize; options?: { step?: number } };
   // Map は JSON に書けないので, 期待する結果は id をキーにしたオブジェクトで書き, 比べる前に揃える.
   test.for(cascadeBoundsCases as Case<Input, Record<string, Point>>[])('$name', ({ input, expected }) => {
-    expect(Object.fromEntries(computeCascadeBounds(input.windows, input.container))).toEqual(expected);
+    expect(Object.fromEntries(computeCascadeBounds(input.windows, input.container, input.options))).toEqual(expected);
   });
 });
 
 describe('computeNextOpenPosition', () => {
   type Laps = { x: number; y: number };
-  type Input = { lastPosition: Point; defaultPosition: Point; size: { width: number; height: number }; container: ContainerSize; laps: Laps };
+  type Options = { step?: number; lapOffset?: number | LapOffsetName };
+  type Input = { lastPosition: Point; defaultPosition: Point; size: { width: number; height: number }; container: ContainerSize; laps: Laps; options?: Options };
   test.for(nextOpenPositionCases as Case<Input, { position: Point; laps: Laps }>[])('$name', ({ input, expected }) => {
-    const { lastPosition, defaultPosition, size, container, laps } = input;
-    expect(computeNextOpenPosition(lastPosition, defaultPosition, size, container, laps)).toEqual(expected);
+    const { lastPosition, defaultPosition, size, container, laps, options = {} } = input;
+    const lapOffset = typeof options.lapOffset === 'string' ? lapOffsets[options.lapOffset] : options.lapOffset;
+    expect(computeNextOpenPosition(lastPosition, defaultPosition, size, container, laps, { step: options.step, lapOffset })).toEqual(expected);
+  });
+});
+
+describe('halfLapOffset, goldenLapOffset', () => {
+  type Input = { rule: LapOffsetName; step: number };
+  test.for(lapOffsetCases as Case<Input, number>[])('$name', ({ input, expected }) => {
+    expect(lapOffsets[input.rule](input.step)).toBe(expected);
   });
 });

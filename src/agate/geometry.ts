@@ -154,9 +154,11 @@ export function computeCenteredPosition(
   return computeMovedPosition(raw, size.width, container, 0, 0);
 }
 
-// 少しずつ右下へずらして重ねるカスケードの間隔.
-// ウインドウの整理と, 新しいウインドウを開く位置の両方で使う.
-export const CASCADE_STEP = 32;
+// 少しずつ右下へずらして重ねるカスケードの間隔の既定の値.
+// ウインドウの整理と, 新しいウインドウを開く位置の両方で使う. 後ろのウインドウの
+// タイトルバーがちょうど見える量が自然なので, タイトルバーの太さが分かる側
+// (描いて測る view と, それを持つ核) が step で差し替える.
+export const CASCADE_STEP = 29;
 
 // カスケードで並べるウインドウ. 並べる順と位置の計算に使う分だけを持つ.
 export interface CascadeWindow {
@@ -174,6 +176,7 @@ export interface CascadeWindow {
 export function computeCascadeBounds(
   windows: CascadeWindow[],
   container: ContainerSize,
+  { step = CASCADE_STEP }: { step?: number } = {},
 ): Map<string, { x: number; y: number }> {
   const ordered = [...windows].sort((a, b) => b.zIndex - a.zIndex);
   const n = ordered.length;
@@ -183,19 +186,19 @@ export function computeCascadeBounds(
   }
   const maxWidth = Math.max(...ordered.map((w) => w.width));
   const maxHeight = Math.max(...ordered.map((w) => w.height));
-  const groupWidth = maxWidth + (n - 1) * CASCADE_STEP;
-  const groupHeight = maxHeight + (n - 1) * CASCADE_STEP;
+  const groupWidth = maxWidth + (n - 1) * step;
+  const groupHeight = maxHeight + (n - 1) * step;
   // 全体が領域より大きい時に単に中央に合わせると負になり, 先頭のウインドウが
   // メニューバーの裏や領域の外に出てしまう. そのため上端と左端より外には出さない
   // (収まらない分は右と下へはみ出させる).
   const originX = Math.max(0, (container.width - groupWidth) / 2);
   const originY = Math.max(0, (container.height - groupHeight) / 2);
   ordered.forEach((w, i) => {
-    // i = 0 が最も手前. ずらす量は奥のウインドウ (i が大きいほど奥) ほど
-    // 小さくなるよう逆順にする.
-    const step = n - 1 - i;
+    // i = 0 が最も手前. ずらす回数は奥のウインドウ (i が大きいほど奥) ほど
+    // 少なくなるよう逆順にする.
+    const rank = n - 1 - i;
     const { x, y } = computeMovedPosition(
-      { x: originX + step * CASCADE_STEP, y: originY + step * CASCADE_STEP },
+      { x: originX + rank * step, y: originY + rank * step },
       w.width,
       container,
       0,
@@ -206,9 +209,32 @@ export function computeCascadeBounds(
   return result;
 }
 
-// 折り返す (端に達して始めの側へ戻る) たびに, 戻る位置をこの分だけずらす.
+// 折り返す (端に達して始めの側へ戻る) たびに, 戻る位置をずらす量.
 // 毎回同じ位置へ戻ると, 1周目と2周目以降が完全に重なってしまうため.
-const LAP_OFFSET = CASCADE_STEP / 2;
+// 決まった値か, 間隔を受けて値を返す関数で渡す. 小数は戻る位置を計算する時に切り捨てる.
+export type LapOffset = number | ((step: number) => number);
+
+// 間隔の半分. 次の周が前の周のちょうど間に並ぶ.
+// 間隔が偶数だと, 2周で1歩分ずれた同じ列に戻るので, 早めに前の周と重なる.
+export function halfLapOffset(step: number): number {
+  return step / 2;
+}
+
+// 黄金比で分けた短い方 (間隔の約 0.38 倍) に近い, 間隔と公約数を持たない整数.
+// 周を重ねても戻る位置が最も均等に散らばり, 前の周と重なりにくい.
+// 次の周は前の周の間の 4 割ほどの所に並ぶ.
+export function goldenLapOffset(step: number): number {
+  const whole = Math.round(step);
+  let offset = Math.max(1, Math.round(whole * (1 - 2 / (1 + Math.sqrt(5)))));
+  while (greatestCommonDivisor(offset, whole) !== 1) {
+    offset += 1;
+  }
+  return offset;
+}
+
+function greatestCommonDivisor(a: number, b: number): number {
+  return b === 0 ? a : greatestCommonDivisor(b, a % b);
+}
 
 // 1つの軸について, 次に開く位置と, その軸で折り返した回数を計算する.
 // ずらした先でウインドウが領域からはみ出すなら, 既定の位置から折り返した回数の分
@@ -219,12 +245,14 @@ function computeNextAxisPosition(
   size: number,
   containerSize: number,
   lap: number,
+  step: number,
+  lapOffset: number,
 ): { start: number; lap: number } {
-  const next = last + CASCADE_STEP;
+  const next = last + step;
   if (next + size <= containerSize) {
     return { start: next, lap };
   }
-  const wrapped = defaultStart + (lap + 1) * LAP_OFFSET;
+  const wrapped = defaultStart + Math.floor((lap + 1) * lapOffset);
   if (wrapped + size <= containerSize) {
     return { start: wrapped, lap: lap + 1 };
   }
@@ -232,9 +260,9 @@ function computeNextAxisPosition(
 }
 
 // 同じアプリケーションの2つ目以降のウインドウを開く位置. 直前に開いた位置から
-// 右下へ CASCADE_STEP の分ずらす. 右端や下端からはみ出す時は, はみ出す軸だけを
+// 右下へ step の分ずらす. 右端や下端からはみ出す時は, はみ出す軸だけを
 // そのアプリケーションの既定の位置 (defaultPosition, 1つ目のウインドウの位置) の側へ戻す.
-// 軸ごとに別々に折り返し, 戻る位置も軸ごとに LAP_OFFSET ずつずらすので,
+// 軸ごとに別々に折り返し, 戻る位置も軸ごとに lapOffset ずつずらすので,
 // 端に貼り付かず, 周ごとに違う斜めの列に並ぶ. 領域より大きいウインドウのために,
 // 最後にドラッグと同じ切り詰めを重ねる.
 export function computeNextOpenPosition(
@@ -243,9 +271,11 @@ export function computeNextOpenPosition(
   size: { width: number; height: number },
   container: ContainerSize,
   laps: { x: number; y: number },
+  { step = CASCADE_STEP, lapOffset = halfLapOffset }: { step?: number; lapOffset?: LapOffset } = {},
 ): { position: { x: number; y: number }; laps: { x: number; y: number } } {
-  const x = computeNextAxisPosition(lastPosition.x, defaultPosition.x, size.width, container.width, laps.x);
-  const y = computeNextAxisPosition(lastPosition.y, defaultPosition.y, size.height, container.height, laps.y);
+  const offset = typeof lapOffset === 'number' ? lapOffset : lapOffset(step);
+  const x = computeNextAxisPosition(lastPosition.x, defaultPosition.x, size.width, container.width, laps.x, step, offset);
+  const y = computeNextAxisPosition(lastPosition.y, defaultPosition.y, size.height, container.height, laps.y, step, offset);
   const position = computeMovedPosition({ x: x.start, y: y.start }, size.width, container, 0, 0);
   return { position, laps: { x: x.lap, y: y.lap } };
 }

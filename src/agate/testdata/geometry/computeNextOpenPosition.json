@@ -8,21 +8,21 @@
       "container": { "width": 1000, "height": 800 },
       "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 132, "y": 132 }, "laps": { "x": 0, "y": 0 } }
+    "expected": { "position": { "x": 129, "y": 129 }, "laps": { "x": 0, "y": 0 } }
   },
   {
     "name": "ずらした先で右端にちょうど収まるなら, まだ折り返さない",
     "input": {
-      "lastPosition": { "x": 568, "y": 100 },
+      "lastPosition": { "x": 571, "y": 100 },
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
       "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 600, "y": 132 }, "laps": { "x": 0, "y": 0 } }
+    "expected": { "position": { "x": 600, "y": 129 }, "laps": { "x": 0, "y": 0 } }
   },
   {
-    "name": "右端からはみ出すなら横だけ既定の位置の側へ戻り, 折り返した回数の分ずらす",
+    "name": "右端からはみ出すなら横だけ既定の位置の側へ戻り, 既定では間隔の半分 (切り捨て) ずらす",
     "input": {
       "lastPosition": { "x": 600, "y": 100 },
       "defaultPosition": { "x": 100, "y": 100 },
@@ -30,7 +30,7 @@
       "container": { "width": 1000, "height": 800 },
       "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 116, "y": 132 }, "laps": { "x": 1, "y": 0 } }
+    "expected": { "position": { "x": 114, "y": 129 }, "laps": { "x": 1, "y": 0 } }
   },
   {
     "name": "下端からはみ出すなら縦だけ既定の位置の側へ戻り, 下端に貼り付かない",
@@ -41,10 +41,10 @@
       "container": { "width": 1000, "height": 800 },
       "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 332, "y": 116 }, "laps": { "x": 0, "y": 1 } }
+    "expected": { "position": { "x": 329, "y": 114 }, "laps": { "x": 0, "y": 1 } }
   },
   {
-    "name": "折り返した回数は軸ごとに数える",
+    "name": "折り返した回数は軸ごとに数え, 半分のずれの小数は回数を掛けてから切り捨てる",
     "input": {
       "lastPosition": { "x": 600, "y": 500 },
       "defaultPosition": { "x": 100, "y": 100 },
@@ -52,7 +52,7 @@
       "container": { "width": 1000, "height": 800 },
       "laps": { "x": 2, "y": 0 }
     },
-    "expected": { "position": { "x": 148, "y": 116 }, "laps": { "x": 3, "y": 1 } }
+    "expected": { "position": { "x": 143, "y": 114 }, "laps": { "x": 3, "y": 1 } }
   },
   {
     "name": "戻る位置でもはみ出すなら, 領域の端へ戻って数え直す",
@@ -61,9 +61,9 @@
       "defaultPosition": { "x": 100, "y": 100 },
       "size": { "width": 400, "height": 300 },
       "container": { "width": 1000, "height": 800 },
-      "laps": { "x": 31, "y": 0 }
+      "laps": { "x": 34, "y": 0 }
     },
-    "expected": { "position": { "x": 0, "y": 132 }, "laps": { "x": 0, "y": 0 } }
+    "expected": { "position": { "x": 0, "y": 129 }, "laps": { "x": 0, "y": 0 } }
   },
   {
     "name": "領域より幅の広いウインドウは横にずらさない",
@@ -74,6 +74,42 @@
       "container": { "width": 1000, "height": 800 },
       "laps": { "x": 0, "y": 0 }
     },
-    "expected": { "position": { "x": 0, "y": 132 }, "laps": { "x": 0, "y": 0 } }
+    "expected": { "position": { "x": 0, "y": 129 }, "laps": { "x": 0, "y": 0 } }
+  },
+  {
+    "name": "間隔を指定すると, 半分のずれもその間隔から決まる",
+    "input": {
+      "lastPosition": { "x": 600, "y": 100 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "laps": { "x": 0, "y": 0 },
+      "options": { "step": 32 }
+    },
+    "expected": { "position": { "x": 116, "y": 132 }, "laps": { "x": 1, "y": 0 } }
+  },
+  {
+    "name": "ずれに黄金比の関数を渡すと, 間隔と公約数を持たない値でずらす",
+    "input": {
+      "lastPosition": { "x": 600, "y": 100 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "laps": { "x": 0, "y": 0 },
+      "options": { "lapOffset": "goldenLapOffset" }
+    },
+    "expected": { "position": { "x": 111, "y": 129 }, "laps": { "x": 1, "y": 0 } }
+  },
+  {
+    "name": "ずれに数値を渡すと, その値でずらす",
+    "input": {
+      "lastPosition": { "x": 600, "y": 100 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "laps": { "x": 0, "y": 0 },
+      "options": { "lapOffset": 13 }
+    },
+    "expected": { "position": { "x": 113, "y": 129 }, "laps": { "x": 1, "y": 0 } }
   }
 ]
