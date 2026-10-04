@@ -153,3 +153,82 @@ export function computeCenteredPosition(
   const raw = { x: (container.width - size.width) / 2, y: (container.height - size.height) / 2 };
   return computeMovedPosition(raw, size.width, container, 0, 0);
 }
+
+// 少しずつ右下へずらして重ねるカスケードの間隔.
+// ウインドウの整理と, 新しいウインドウを開く位置の両方で使う.
+export const CASCADE_STEP = 32;
+
+// カスケードで並べるウインドウ. 並べる順と位置の計算に使う分だけを持つ.
+export interface CascadeWindow {
+  id: string;
+  zIndex: number;
+  width: number;
+  height: number;
+}
+
+// ウインドウの整理 (⌥ を押しながら全てを手前に移動) で使う, 領域の中央を基準にした
+// カスケード (グリッドではない). 最も手前 (zIndex が最大) のウインドウは上に何も
+// 重ならないので最も右下に, 最も奥のウインドウが最も左上に来るように並べる
+// (逆にすると, 手前のウインドウの本体が奥のウインドウのタイトルバーを覆って隠すため).
+// 全体は中央に置く.
+export function computeCascadeBounds(
+  windows: CascadeWindow[],
+  container: ContainerSize,
+): Map<string, { x: number; y: number }> {
+  const ordered = [...windows].sort((a, b) => b.zIndex - a.zIndex);
+  const n = ordered.length;
+  const result = new Map<string, { x: number; y: number }>();
+  if (n === 0) {
+    return result;
+  }
+  const maxWidth = Math.max(...ordered.map((w) => w.width));
+  const maxHeight = Math.max(...ordered.map((w) => w.height));
+  const groupWidth = maxWidth + (n - 1) * CASCADE_STEP;
+  const groupHeight = maxHeight + (n - 1) * CASCADE_STEP;
+  // 全体が領域より大きい時に単に中央に合わせると負になり, 先頭のウインドウが
+  // メニューバーの裏や領域の外に出てしまう. そのため上端と左端より外には出さない
+  // (収まらない分は右と下へはみ出させる).
+  const originX = Math.max(0, (container.width - groupWidth) / 2);
+  const originY = Math.max(0, (container.height - groupHeight) / 2);
+  ordered.forEach((w, i) => {
+    // i = 0 が最も手前. ずらす量は奥のウインドウ (i が大きいほど奥) ほど
+    // 小さくなるよう逆順にする.
+    const step = n - 1 - i;
+    const { x, y } = computeMovedPosition(
+      { x: originX + step * CASCADE_STEP, y: originY + step * CASCADE_STEP },
+      w.width,
+      container,
+      0,
+      0,
+    );
+    result.set(w.id, { x, y });
+  });
+  return result;
+}
+
+// 周回する (右端に達して左上へ戻る) たびに, 再び始める位置をこの分だけずらす.
+// 毎回同じ位置から始めると, 1周目と2周目以降が完全に重なってしまうため.
+const LAP_OFFSET = CASCADE_STEP / 2;
+
+// 同じアプリケーションの2つ目以降のウインドウを開く位置. 直前に開いた位置から
+// 右下へ CASCADE_STEP の分ずらす. 右端に寄りすぎてタイトルバーを掴めなくなりそうな
+// 時は, そのアプリケーションの既定の位置 (defaultPosition, 1つ目のウインドウの位置)
+// まで戻ってカスケードをやり直す (周回のたびに LAP_OFFSET の分ずらした位置から
+// 始めるので, 前の周と重ならない). 縦は右端のような判定に使わないので,
+// 念のため最後にドラッグと同じ切り詰めを重ねる.
+export function computeNextOpenPosition(
+  lastPosition: { x: number; y: number },
+  defaultPosition: { x: number; y: number },
+  size: { width: number; height: number },
+  container: ContainerSize,
+  lap: number,
+): { position: { x: number; y: number }; lap: number } {
+  const next = { x: lastPosition.x + CASCADE_STEP, y: lastPosition.y + CASCADE_STEP };
+  const reachedRightEdge = next.x > container.width - MIN_VISIBLE_MARGIN;
+  const nextLap = reachedRightEdge ? lap + 1 : lap;
+  const raw = reachedRightEdge
+    ? { x: defaultPosition.x + nextLap * LAP_OFFSET, y: defaultPosition.y + nextLap * LAP_OFFSET }
+    : next;
+  const position = computeMovedPosition(raw, size.width, container, 0, 0);
+  return { position, lap: nextLap };
+}

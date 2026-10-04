@@ -1,0 +1,57 @@
+[
+  {
+    "name": "直前に開いた位置から右下へ CASCADE_STEP の分ずらす",
+    "input": {
+      "lastPosition": { "x": 100, "y": 100 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "lap": 0
+    },
+    "expected": { "position": { "x": 132, "y": 132 }, "lap": 0 }
+  },
+  {
+    "name": "ずらした先がちょうど右端の余白の位置なら, まだ戻らない",
+    "input": {
+      "lastPosition": { "x": 928, "y": 100 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "lap": 0
+    },
+    "expected": { "position": { "x": 960, "y": 132 }, "lap": 0 }
+  },
+  {
+    "name": "右端の余白を越えたら既定の位置へ戻り, 周回の分だけずらす",
+    "input": {
+      "lastPosition": { "x": 940, "y": 200 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "lap": 0
+    },
+    "expected": { "position": { "x": 116, "y": 116 }, "lap": 1 }
+  },
+  {
+    "name": "2周目の終わりでは, 既定の位置から2周分ずらす",
+    "input": {
+      "lastPosition": { "x": 950, "y": 300 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "lap": 1
+    },
+    "expected": { "position": { "x": 132, "y": 132 }, "lap": 2 }
+  },
+  {
+    "name": "下端では周回せず, タイトルバーを領域の中に残す",
+    "input": {
+      "lastPosition": { "x": 100, "y": 740 },
+      "defaultPosition": { "x": 100, "y": 100 },
+      "size": { "width": 400, "height": 300 },
+      "container": { "width": 1000, "height": 800 },
+      "lap": 0
+    },
+    "expected": { "position": { "x": 132, "y": 760 }, "lap": 0 }
+  }
+]
