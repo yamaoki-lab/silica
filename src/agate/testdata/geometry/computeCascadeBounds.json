@@ -1,0 +1,76 @@
+[
+  {
+    "name": "ウインドウが無ければ何も返さない",
+    "input": { "windows": [], "container": { "width": 1000, "height": 800 } },
+    "expected": {}
+  },
+  {
+    "name": "1つだけなら中央に置く",
+    "input": {
+      "windows": [{ "id": "a", "zIndex": 1, "width": 400, "height": 300 }],
+      "container": { "width": 1000, "height": 800 }
+    },
+    "expected": { "a": { "x": 300, "y": 250 } }
+  },
+  {
+    "name": "手前のウインドウほど右下に置き, 全体を中央に置く",
+    "input": {
+      "windows": [
+        { "id": "a", "zIndex": 1, "width": 400, "height": 300 },
+        { "id": "b", "zIndex": 3, "width": 300, "height": 200 },
+        { "id": "c", "zIndex": 2, "width": 500, "height": 400 }
+      ],
+      "container": { "width": 1000, "height": 800 }
+    },
+    "expected": {
+      "a": { "x": 221, "y": 171 },
+      "b": { "x": 279, "y": 229 },
+      "c": { "x": 250, "y": 200 }
+    }
+  },
+  {
+    "name": "全体が領域より大きい時は, 最も奥のウインドウを左上の端より外に出さない",
+    "input": {
+      "windows": [
+        { "id": "a", "zIndex": 1, "width": 700, "height": 500 },
+        { "id": "b", "zIndex": 2, "width": 700, "height": 500 }
+      ],
+      "container": { "width": 600, "height": 400 }
+    },
+    "expected": {
+      "a": { "x": 0, "y": 0 },
+      "b": { "x": 29, "y": 29 }
+    }
+  },
+  {
+    "name": "下へずらしすぎる時は, タイトルバーを領域の中に残す",
+    "input": {
+      "windows": [
+        { "id": "a", "zIndex": 1, "width": 100, "height": 50 },
+        { "id": "b", "zIndex": 2, "width": 100, "height": 50 },
+        { "id": "c", "zIndex": 3, "width": 100, "height": 50 }
+      ],
+      "container": { "width": 200, "height": 90 }
+    },
+    "expected": {
+      "a": { "x": 21, "y": 0 },
+      "b": { "x": 50, "y": 29 },
+      "c": { "x": 79, "y": 50 }
+    }
+  },
+  {
+    "name": "間隔を指定すると, その分ずつずらす (タイトルバーの太さに合わせる時)",
+    "input": {
+      "windows": [
+        { "id": "a", "zIndex": 1, "width": 400, "height": 300 },
+        { "id": "b", "zIndex": 2, "width": 400, "height": 300 }
+      ],
+      "container": { "width": 1000, "height": 800 },
+      "options": { "step": 40 }
+    },
+    "expected": {
+      "a": { "x": 280, "y": 230 },
+      "b": { "x": 320, "y": 270 }
+    }
+  }
+]

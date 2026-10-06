@@ -1,0 +1,27 @@
+[
+  {
+    "name": "半分は間隔の半分を小数のまま返す",
+    "input": { "rule": "halfLapOffset", "step": 29 },
+    "expected": 14.5
+  },
+  {
+    "name": "黄金比は間隔 29 で 11 を返す (29 × 0.38 を丸めた値)",
+    "input": { "rule": "goldenLapOffset", "step": 29 },
+    "expected": 11
+  },
+  {
+    "name": "黄金比は丸めた値が間隔と公約数を持つなら, 持たなくなるまで増やす (32 では 12 を飛ばして 13)",
+    "input": { "rule": "goldenLapOffset", "step": 32 },
+    "expected": 13
+  },
+  {
+    "name": "黄金比は間隔 24 では 9 と 10 を飛ばして 11",
+    "input": { "rule": "goldenLapOffset", "step": 24 },
+    "expected": 11
+  },
+  {
+    "name": "黄金比は間隔が小数なら丸めた間隔で計算する",
+    "input": { "rule": "goldenLapOffset", "step": 28.6 },
+    "expected": 11
+  }
+]

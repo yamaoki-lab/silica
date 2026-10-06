@@ -1,0 +1,12 @@
+[
+  {
+    "name": "領域の中央に置く",
+    "input": { "size": { "width": 300, "height": 200 }, "container": { "width": 800, "height": 600 } },
+    "expected": { "x": 250, "y": 200 }
+  },
+  {
+    "name": "領域より大きい時は上へ出さずタイトルバーを隠さない",
+    "input": { "size": { "width": 1000, "height": 800 }, "container": { "width": 800, "height": 600 } },
+    "expected": { "x": -100, "y": 0 }
+  }
+]

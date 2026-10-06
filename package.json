@@ -43,7 +43,7 @@
     "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc -b",
     "lint": "oxlint",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",
