@@ -1,0 +1,62 @@
+[
+  {
+    "name": "希望サイズに枠の分を足す",
+    "input": { "preferred": { "width": 400, "height": 300 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 220, "height": 160 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 402, "height": 330 }
+  },
+  {
+    "name": "幅は数値で決め, 高さは測った値にする",
+    "input": { "preferred": { "width": 380, "height": 512.4 }, "frame": { "width": 0, "height": 28 }, "current": { "width": 300, "height": 200 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 380, "height": 541 }
+  },
+  {
+    "name": "希望サイズを省いた軸は今の大きさのまま",
+    "input": { "preferred": { "height": 500 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 200 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 640, "height": 530 }
+  },
+  {
+    "name": "全て省くと今の大きさのまま",
+    "input": { "preferred": {}, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 480 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 640, "height": 480 }
+  },
+  {
+    "name": "小数は枠を足した後で切り上げる",
+    "input": { "preferred": { "width": 300.2, "height": 199.5 }, "frame": { "width": 1.5, "height": 28.25 }, "current": { "width": 220, "height": 160 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 302, "height": 228 }
+  },
+  {
+    "name": "最小サイズに枠を足したものより小さくしない",
+    "input": { "preferred": { "width": 100, "height": 50, "minWidth": 300, "minHeight": 120 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 480 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 302, "height": 150 }
+  },
+  {
+    "name": "希望サイズを省いた軸も最小サイズまでは広げる",
+    "input": { "preferred": { "height": 300, "minWidth": 380 }, "frame": { "width": 0, "height": 28 }, "current": { "width": 220, "height": 160 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 380, "height": 328 }
+  },
+  {
+    "name": "希望サイズを省いた軸は最小サイズより広ければ今のまま",
+    "input": { "preferred": { "height": 300, "minWidth": 380 }, "frame": { "width": 0, "height": 28 }, "current": { "width": 500, "height": 160 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 500, "height": 328 }
+  },
+  {
+    "name": "最小サイズを省いた時は既定の最小の大きさで止める",
+    "input": { "preferred": { "width": 50, "height": 40 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 480 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 200, "height": 120 }
+  },
+  {
+    "name": "最小サイズは既定の最小の大きさより小さくもできる",
+    "input": { "preferred": { "width": 50, "height": 40, "minWidth": 60, "minHeight": 20 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 480 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 62, "height": 70 }
+  },
+  {
+    "name": "領域より大きくしない",
+    "input": { "preferred": { "width": 2000, "height": 1500 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 480 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "width": 1200, "height": 800 }
+  },
+  {
+    "name": "最小サイズより領域が狭い時は領域に収める",
+    "input": { "preferred": { "width": 400, "height": 300, "minWidth": 900, "minHeight": 700 }, "frame": { "width": 2, "height": 30 }, "current": { "width": 640, "height": 480 }, "container": { "width": 800, "height": 600 } },
+    "expected": { "width": 800, "height": 600 }
+  }
+]

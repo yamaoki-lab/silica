@@ -4,6 +4,7 @@ import {
   type CascadeWindow,
   computeCascadeBounds,
   computeCenteredPosition,
+  computeFittedSize,
   computeMovedPosition,
   computeNextOpenPosition,
   computeProportionalReposition,
@@ -13,9 +14,10 @@ import {
   halfLapOffset,
   type TilePosition,
 } from './geometry.ts';
-import type { Bounds, ContainerSize, ResizeEdge } from './types.ts';
+import type { Bounds, ContainerSize, FrameExtent, PreferredSize, ResizeEdge } from './types.ts';
 import cascadeBoundsCases from './testdata/geometry/computeCascadeBounds.json' with { type: 'json' };
 import centeredPositionCases from './testdata/geometry/computeCenteredPosition.json' with { type: 'json' };
+import fittedSizeCases from './testdata/geometry/computeFittedSize.json' with { type: 'json' };
 import movedPositionCases from './testdata/geometry/computeMovedPosition.json' with { type: 'json' };
 import nextOpenPositionCases from './testdata/geometry/computeNextOpenPosition.json' with { type: 'json' };
 import proportionalRepositionCases from './testdata/geometry/computeProportionalReposition.json' with { type: 'json' };
@@ -69,6 +71,14 @@ describe('computeCenteredPosition', () => {
   type Input = { size: { width: number; height: number }; container: ContainerSize };
   test.for(centeredPositionCases as Case<Input, Point>[])('$name', ({ input, expected }) => {
     expect(computeCenteredPosition(input.size, input.container)).toEqual(expected);
+  });
+});
+
+describe('computeFittedSize', () => {
+  type Size = { width: number; height: number };
+  type Input = { preferred: PreferredSize; frame: FrameExtent; current: Size; container: ContainerSize };
+  test.for(fittedSizeCases as Case<Input, Size>[])('$name', ({ input, expected }) => {
+    expect(computeFittedSize(input.preferred, input.frame, input.current, input.container)).toEqual(expected);
   });
 });
 
