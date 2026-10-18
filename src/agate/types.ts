@@ -34,3 +34,18 @@ export interface FrameExtent {
   width: number;
   height: number;
 }
+
+// ビューポートの情報. ジオメトリの側がビューポートごとに持つ. 単位は CSS の px.
+// 大きさと倍率は, OS のウインドウならシェルが, ブラウザのウインドウならページが知らせる.
+// ページの中にメニューバーがある時, ウインドウを置く領域 (ContainerSize) は
+// この大きさからメニューバーを除いたものになる.
+// ただのデータで, protobuf に写せる形にしておく.
+export interface ViewportInfo {
+  width: number;
+  height: number;
+  // CSS の px 1つに当たる, 画面の画素の数.
+  scale: number;
+  // ウインドウのタイトルバーの太さ. view が測り, カスケードの間隔に使う.
+  // 向きやコンパクトの表示, 倍率で変わるので, ビューポートごとに持つ.
+  titleBarThickness: number;
+}
