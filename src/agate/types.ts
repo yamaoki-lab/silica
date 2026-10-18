@@ -9,7 +9,7 @@ export interface Bounds {
   height: number;
 }
 
-// ウインドウを置く領域 (メニューバーを除いた面の中) の大きさ.
+// ウインドウを置く領域 (メニューバーを除いたビューポートの中) の大きさ.
 export interface ContainerSize {
   width: number;
   height: number;
