@@ -1,0 +1,27 @@
+[
+  {
+    "name": "収まっている時は動かさない",
+    "input": { "position": { "x": 100, "y": 80 }, "size": { "width": 400, "height": 300 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "x": 100, "y": 80 }
+  },
+  {
+    "name": "右からはみ出した分だけ左へ戻す",
+    "input": { "position": { "x": 900, "y": 80 }, "size": { "width": 400, "height": 300 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "x": 800, "y": 80 }
+  },
+  {
+    "name": "下からはみ出した分だけ上へ戻す",
+    "input": { "position": { "x": 100, "y": 600 }, "size": { "width": 400, "height": 300 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "x": 100, "y": 500 }
+  },
+  {
+    "name": "左か上へ出ている時は領域の中へ入れる",
+    "input": { "position": { "x": -50, "y": -10 }, "size": { "width": 400, "height": 300 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "x": 0, "y": 0 }
+  },
+  {
+    "name": "領域より大きい時は左上を領域の左上に合わせる",
+    "input": { "position": { "x": 300, "y": 200 }, "size": { "width": 1500, "height": 900 }, "container": { "width": 1200, "height": 800 } },
+    "expected": { "x": 0, "y": 0 }
+  }
+]

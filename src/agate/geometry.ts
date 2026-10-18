@@ -187,6 +187,20 @@ export function computeFittedSize(
   };
 }
 
+// 大きさを変えた後の位置. 左上はなるべく動かさず, 領域の右か下からはみ出した分だけ
+// 左か上へ戻す. 領域より大きい時は左上を領域の左上に合わせる.
+// ズームで広げた時に, 右下の近くのウインドウが領域の外へ出ないようにするため.
+export function computeContainedPosition(
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  container: ContainerSize,
+): { x: number; y: number } {
+  return {
+    x: Math.max(0, Math.min(position.x, container.width - size.width)),
+    y: Math.max(0, Math.min(position.y, container.height - size.height)),
+  };
+}
+
 // 少しずつ右下へずらして重ねるカスケードの間隔の既定の値.
 // ウインドウの整理と, 新しいウインドウを開く位置の両方で使う. 後ろのウインドウの
 // タイトルバーがちょうど見える量が自然なので, タイトルバーの太さを view が測り,
