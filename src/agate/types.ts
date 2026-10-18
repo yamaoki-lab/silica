@@ -14,3 +14,23 @@ export interface ContainerSize {
   width: number;
   height: number;
 }
+
+// アプリケーションが指定する希望サイズと最小サイズ. どちらも中身の大きさで,
+// 枠, タイトルバー, フレームワークが付ける余白を含まない. OS のウインドウに
+// 切り離した時も, 同じ数値をそのままシェルへ渡せるようにするため.
+// 値は軸ごとに省ける. 省いた値は指定なしで, フレームワークに任せる.
+// 中身を測るか数値を決めるかは view の側の関数が決め, ここには返った数値だけが入る.
+// ただのデータで, protobuf に写せる形にしておく.
+export interface PreferredSize {
+  width?: number;
+  height?: number;
+  minWidth?: number;
+  minHeight?: number;
+}
+
+// 中身の周りにフレームワークが付けるもの (枠, タイトルバー, 余白) の, 幅と高さの合計.
+// タイトルバーの向きやコンパクトの表示, 倍率で変わるので, view が測る.
+export interface FrameExtent {
+  width: number;
+  height: number;
+}
