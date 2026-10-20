@@ -4,7 +4,7 @@ import { defaultClientConditions, defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // S2 の style マクロを組み立て時に CSS へ直すため, macros は最初に置く.
+  // S2 の style マクロをビルド時に CSS へ直すため, macros は最初に置く.
   plugins: [macros.vite(), react()],
   resolve: {
     // silica の package.json の silica-source の条件で, dist を作らずにソースを読む.

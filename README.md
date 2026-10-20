@@ -26,7 +26,7 @@ pnpm dev        # サンプルを開く
 pnpm typecheck
 pnpm lint
 pnpm test
-pnpm build      # dist に組み立てる
+pnpm build      # dist にビルドする
 ```
 
 ## ライセンス

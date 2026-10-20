@@ -1,4 +1,4 @@
-// セッションの wasm を組み立て, 縮めて, ラッパーが読む場所に置く (pnpm build:wasm).
+// セッションの wasm をビルドし, 縮めて, ラッパーが読む場所に置く (pnpm build:wasm).
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';

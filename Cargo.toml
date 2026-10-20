@@ -2,7 +2,7 @@
 members = ["session"]
 resolver = "3"
 
-# セッションの wasm を組み立てる設定. ページが読む量を減らすため, 速さより小ささを優先する.
+# セッションの wasm をビルドする設定. ページが読む量を減らすため, 速さより小ささを優先する.
 # release とは分けておき, 後で足すクレート (シェル等) の release には効かせない.
 [profile.wasm]
 inherits = "release"
