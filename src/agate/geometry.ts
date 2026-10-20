@@ -1,4 +1,4 @@
-import type { Bounds, ContainerSize, ResizeEdge } from './types.ts';
+import type { Bounds, ContainerSize, FrameExtent, PreferredSize, ResizeEdge } from './types.ts';
 
 // ウインドウ (タイトルバーを含む全体) の既定の最小の大きさ. アプリケーションごとに変えられる.
 export const MIN_WINDOW_WIDTH = 200;
@@ -152,6 +152,53 @@ export function computeCenteredPosition(
 ): { x: number; y: number } {
   const raw = { x: (container.width - size.width) / 2, y: (container.height - size.height) / 2 };
   return computeMovedPosition(raw, size.width, container, 0, 0);
+}
+
+// 1つの軸の, 希望サイズに合わせたウインドウの大きさ. computeFittedSize を参照.
+function fitAxis(
+  preferred: number | undefined,
+  minimum: number | undefined,
+  frame: number,
+  current: number,
+  defaultMinimum: number,
+  available: number,
+): number {
+  // 測った大きさは小数になる. 切り捨てると中身がわずかにはみ出してスクロールバーが
+  // 出るので, 枠を足した後で切り上げる.
+  const target = preferred === undefined ? current : Math.ceil(preferred + frame);
+  const lower = minimum === undefined ? defaultMinimum : Math.ceil(minimum + frame);
+  return Math.min(Math.max(target, lower), available);
+}
+
+// 希望サイズ (中身の大きさ) に枠の分を足し, ウインドウの大きさを計算する.
+// 開く時とズームの時に使う. 軸ごとに独立に決める:
+// - 希望サイズを省いた軸は, 今の大きさのまま (開く時は呼ぶ側が既定の大きさを渡す)
+// - 下は最小サイズに枠を足したもの, 省いた時は既定の最小の大きさで止める
+// - 上はウインドウを置く領域で止める. 最小サイズより領域が狭い時も, 領域に収める
+export function computeFittedSize(
+  preferred: PreferredSize,
+  frame: FrameExtent,
+  current: { width: number; height: number },
+  container: ContainerSize,
+): { width: number; height: number } {
+  return {
+    width: fitAxis(preferred.width, preferred.minWidth, frame.width, current.width, MIN_WINDOW_WIDTH, container.width),
+    height: fitAxis(preferred.height, preferred.minHeight, frame.height, current.height, MIN_WINDOW_HEIGHT, container.height),
+  };
+}
+
+// 大きさを変えた後の位置. 左上はなるべく動かさず, 領域の右か下からはみ出した分だけ
+// 左か上へ戻す. 領域より大きい時は左上を領域の左上に合わせる.
+// ズームで広げた時に, 右下の近くのウインドウが領域の外へ出ないようにするため.
+export function computeContainedPosition(
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  container: ContainerSize,
+): { x: number; y: number } {
+  return {
+    x: Math.max(0, Math.min(position.x, container.width - size.width)),
+    y: Math.max(0, Math.min(position.y, container.height - size.height)),
+  };
 }
 
 // 少しずつ右下へずらして重ねるカスケードの間隔の既定の値.
