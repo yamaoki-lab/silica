@@ -1,0 +1,6 @@
+# 手元と CI で同じコンパイラを使い, wasm の大きさがずれないようにする.
+[toolchain]
+channel = "1.99.0"
+components = ["clippy", "rustfmt"]
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"

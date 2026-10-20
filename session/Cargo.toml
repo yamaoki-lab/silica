@@ -1,0 +1,13 @@
+[package]
+name = "silica-session"
+version = "0.0.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[lib]
+# cdylib はページが読む wasm (後でシェルが読む共有ライブラリも), rlib は cargo test のため.
+crate-type = ["cdylib", "rlib"]
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+talc = "5.1.1"
