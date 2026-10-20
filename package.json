@@ -40,6 +40,7 @@
   },
   "scripts": {
     "gen": "buf generate",
+    "build:wasm": "node scripts/build-wasm.ts",
     "dev": "pnpm gen && pnpm --filter silica-example dev",
     "build": "pnpm gen && vite build && tsc -p tsconfig.build.json",
     "typecheck": "pnpm gen && tsc -b",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@bufbuild/buf": "1.74.0",
     "@types/node": "^26.6.3",
+    "binaryen": "132.0.0",
     "oxlint": "^1.85.0",
     "ts-proto": "2.18.0",
     "typescript": "^7.0.2",

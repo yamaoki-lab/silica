@@ -144,6 +144,9 @@ dist
 /src/session/gen/
 /src/session/gen-json/
 
+# セッションの wasm (pnpm build:wasm)
+/src/session/session.wasm
+
 # Vite files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

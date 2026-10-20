@@ -10,4 +10,5 @@ opt-level = "z"
 lto = true
 codegen-units = 1
 panic = "abort"
-strip = true
+# 名前等の節は wasm-opt が消す. ここで消すと使う機能を書いた節も消え, wasm-opt がそれを読めなくなる.
+strip = false
