@@ -3,4 +3,6 @@ packages:
   - example/apps/*
 
 allowBuilds:
+  # 入れた OS に合う buf の実行ファイルを選んで繋ぐだけ (取りには行かない).
+  '@bufbuild/buf': true
   '@swc/core': true

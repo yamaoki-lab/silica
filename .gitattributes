@@ -8,3 +8,4 @@
 
 # 自動で作られるので, GitHub の差分では畳む.
 pnpm-lock.yaml linguist-generated=true
+Cargo.lock     linguist-generated=true

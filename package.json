@@ -39,17 +39,23 @@
     }
   },
   "scripts": {
-    "dev": "pnpm --filter silica-example dev",
-    "build": "vite build && tsc -p tsconfig.build.json",
-    "typecheck": "tsc -b",
+    "gen": "buf generate",
+    "dev": "pnpm gen && pnpm --filter silica-example dev",
+    "build": "pnpm gen && vite build && tsc -p tsconfig.build.json",
+    "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
-    "test": "vitest run"
+    "test": "pnpm gen && vitest run"
   },
   "devDependencies": {
+    "@bufbuild/buf": "1.74.0",
     "@types/node": "^26.6.3",
     "oxlint": "^1.85.0",
+    "ts-proto": "2.18.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
     "vitest": "^5.0.2"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.16.0"
   }
 }

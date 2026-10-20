@@ -15,3 +15,32 @@ static TALC: talc::wasm::WasmDynamicTalc = talc::wasm::new_wasm_dynamic_allocato
 fn panic(_: &core::panic::PanicInfo) -> ! {
     core::arch::wasm32::unreachable()
 }
+
+/// proto/silica/session/v1alpha1/session.proto から生成した型.
+// 生成したコードには clippy をかけない.
+#[allow(clippy::all)]
+pub mod proto {
+    include!(concat!(env!("OUT_DIR"), "/silica.session.v1alpha1.rs"));
+    #[cfg(test)]
+    include!(concat!(
+        env!("OUT_DIR"),
+        "/silica.session.v1alpha1.serde.rs"
+    ));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::proto::{ListWindows, Request, request};
+    use prost::Message as _;
+
+    #[test]
+    fn scene_json_request_round_trips_through_bytes() {
+        let request: Request = serde_json::from_str(r#"{ "listWindows": {} }"#).unwrap();
+        assert_eq!(
+            request.body,
+            Some(request::Body::ListWindows(ListWindows {}))
+        );
+        let decoded = Request::decode(request.encode_to_vec().as_slice()).unwrap();
+        assert_eq!(decoded, request);
+    }
+}
