@@ -1,4 +1,4 @@
-# PR ごとに, 型検査, lint, テスト, 組み立て (silica と見本) を回す.
+# PR ごとに, 型検査, lint, テスト, ビルド (silica, セッションの wasm, サンプル) と, セッションの大きさの計測を回す.
 # OS ごとに違うコードは無いので, Linux の1か所で回す.
 name: CI
 
@@ -30,9 +30,20 @@ jobs:
         with:
           node-version-file: .node-version # yamaoki-lint:ignore
       - run: pnpm install --frozen-lockfile
+      # Rust のバージョン, ターゲット, コンポーネントは rust-toolchain.toml から読む. rustup は GitHub の環境に入っている.
+      - run: rustup toolchain install
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm exec buf lint
+      - run: cargo fmt --check
+      # セッションは手元 (テスト) と wasm の両方でビルドするので, clippy も両方にかける.
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
+      - run: cargo test
       - run: pnpm test
       - run: pnpm build
+      - run: pnpm build:wasm
+      # サイズ上限を超えたら落とす. 値はジョブの要約にも出す.
+      - run: pnpm check:size
       - name: build (example)
         run: pnpm --filter silica-example build
