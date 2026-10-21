@@ -11,7 +11,7 @@ const peers = Object.keys(peerDependencies)
 export default defineConfig({
   build: {
     target: 'esnext',
-    // 使う側の組み立てで縮めるので, ここでは読める形のまま出す.
+    // 使う側のビルドで縮めるので, ここでは読める形のまま出す.
     minify: false,
     lib: {
       entry: {
@@ -21,7 +21,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rolldownOptions: {
-      // モジュールごとのファイルで出すと, 使う側の組み立てが要らないファイルを落とし, ファイルの境目で分けられる.
+      // モジュールごとのファイルで出すと, 使う側のビルドが要らないファイルを落とし, ファイルの境目で分けられる.
       output: { preserveModules: true, preserveModulesRoot: 'src' },
       external: (id) => peers.some((name) => id === name || id.startsWith(`${name}/`)),
     },

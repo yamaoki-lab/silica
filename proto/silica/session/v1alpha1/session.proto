@@ -1,0 +1,33 @@
+// ページやシェルとセッションの間で受け渡すメッセージ.
+// セッションは Rust (prost) で, ページの側は TS (ts-proto) で, ここから生成した型を使う.
+syntax = "proto3";
+
+package silica.session.v1alpha1;
+
+// セッションへの頼みごと. 1回の呼び出しで1つ渡す.
+message Request {
+  oneof body {
+    ListWindows list_windows = 1;
+  }
+}
+
+// 頼みごとへの返事. どの頼みごとにも, 返す形が1つ決まっている.
+message Response {
+  oneof body {
+    WindowList window_list = 1;
+  }
+}
+
+// 開いているウインドウを全て返してもらう.
+message ListWindows {}
+
+// ListWindows の返事.
+message WindowList {
+  repeated Window windows = 1;
+}
+
+// セッションが持つウインドウ.
+message Window {
+  // セッションが 1 から順に振る. 0 は使わない.
+  uint32 id = 1;
+}
