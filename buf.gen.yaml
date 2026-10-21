@@ -12,7 +12,7 @@ plugins:
       - useExactTypes=false
       - enumsAsLiterals=true
       - importSuffix=.ts
-  # テストで場面の JSON を読む方. ページが読む方と同じ型に, JSON の処理を足したもの.
+  # テストでシナリオの JSON を読む方. ページが読む方と同じ型に, JSON の処理を足したもの.
   - local: protoc-gen-ts_proto
     out: src/session/gen-json
     opt:

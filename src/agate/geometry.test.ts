@@ -1,4 +1,4 @@
-// 場面は testdata/geometry/ の JSON に, 名前と入力と期待する結果の組で書く. ここでは流すだけにする.
+// テストケースは testdata/geometry/ の JSON に, 名前と入力と期待する結果の組で書く. ここでは流すだけにする.
 import { describe, expect, test } from 'vitest';
 import {
   type CascadeWindow,

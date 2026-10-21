@@ -14,7 +14,7 @@ fn main() {
         .compile_fds(files.clone())
         .unwrap();
 
-    // テストで場面の JSON を読むための serde の実装. テストの時だけ取り込む.
+    // テストでシナリオの JSON を読むための serde の実装. テストの時だけ取り込む.
     let out = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
     pbjson_build::Builder::new()
         .register_descriptors(&files.encode_to_vec())

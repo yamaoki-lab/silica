@@ -4,14 +4,14 @@ syntax = "proto3";
 
 package silica.session.v1alpha1;
 
-// セッションへの頼みごと. 1回の呼び出しで1つ渡す.
+// セッションへのリクエスト. 1回の呼び出しで1つ渡す.
 message Request {
   oneof body {
     ListWindows list_windows = 1;
   }
 }
 
-// 頼みごとへの返事. どの頼みごとにも, 返す形が1つ決まっている.
+// リクエストへのレスポンス. どのリクエストにも, 返す形が1つ決まっている.
 message Response {
   oneof body {
     WindowList window_list = 1;
@@ -21,7 +21,7 @@ message Response {
 // 開いているウインドウを全て返してもらう.
 message ListWindows {}
 
-// ListWindows の返事.
+// ListWindows のレスポンス.
 message WindowList {
   repeated Window windows = 1;
 }
