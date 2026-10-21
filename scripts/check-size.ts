@@ -12,8 +12,8 @@ import { build, type Rolldown } from 'vite';
 const LIMIT = 32 * 1024;
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-// ラッパーができるまでは, 生成コードをエントリにして測る.
-const entry = 'src/session/gen/silica/session/v1alpha1/session.ts';
+// view が読む所. ここから辿れる生成コードと protobuf の実行部も一緒に束ねる.
+const entry = 'src/session/index.ts';
 const wasm = 'src/session/session.wasm';
 
 // 使う側のビルドに近づけるため, リポジトリの設定 (ライブラリ用で minify しない) は読まない.
