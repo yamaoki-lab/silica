@@ -1,0 +1,32 @@
+[
+  {
+    "name": "登録したアプリケーションを開ける",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}, {"id": "viewer-2", "singleInstance": true}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "viewer-2"}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "viewer-2"}}]}
+    ]
+  },
+  {
+    "name": "登録済みの id は重複として断る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"rejected": {"reason": "REJECT_REASON_DUPLICATE_APPLICATION"}}}
+    ]
+  },
+  {
+    "name": "1つでも重複があれば, どれも登録しない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "viewer"}, {"id": "editor"}, {"id": "editor"}]}}, "response": {"rejected": {"reason": "REJECT_REASON_DUPLICATE_APPLICATION"}}},
+      {"request": {"openApplication": {"applicationId": "viewer"}}, "response": {"rejected": {"reason": "REJECT_REASON_UNKNOWN_APPLICATION"}}}
+    ]
+  },
+  {
+    "name": "形の誤った id を断る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "Editor"}]}}, "response": {"rejected": {"reason": "REJECT_REASON_INVALID_APPLICATION_ID"}}},
+      {"request": {"registerApplications": {"applications": [{"id": "my_editor"}]}}, "response": {"rejected": {"reason": "REJECT_REASON_INVALID_APPLICATION_ID"}}},
+      {"request": {"registerApplications": {"applications": [{"id": ""}]}}, "response": {"rejected": {"reason": "REJECT_REASON_INVALID_APPLICATION_ID"}}}
+    ]
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "実行中のインスタンスが無ければ作る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]}
+    ]
+  },
+  {
+    "name": "実行中のインスタンスがあれば渡す",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"forwardedToInstance": {"instanceId": 1}}]}
+    ]
+  },
+  {
+    "name": "新しく起動する時は, 実行中のインスタンスがあっても作る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "editor", "newInstance": true}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "editor"}}]}
+    ]
+  },
+  {
+    "name": "単一インスタンスのアプリケーションは, 新しく起動する時も渡す",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor", "singleInstance": true}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "editor", "newInstance": true}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"forwardedToInstance": {"instanceId": 1}}]}
+    ]
+  },
+  {
+    "name": "渡す先は, 最後に前面になったウインドウのインスタンス",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "editor", "newInstance": true}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 2, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 2, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"forwardedToInstance": {"instanceId": 1}}]}
+    ]
+  },
+  {
+    "name": "登録していないアプリケーションは断る",
+    "steps": [
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"rejected": {"reason": "REJECT_REASON_UNKNOWN_APPLICATION"}}}
+    ]
+  }
+]
