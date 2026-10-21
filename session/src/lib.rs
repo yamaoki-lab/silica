@@ -6,6 +6,7 @@
 
 extern crate alloc;
 
+mod entry;
 mod state;
 
 pub use state::Session;

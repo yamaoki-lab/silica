@@ -54,8 +54,16 @@ pub struct Session {
 }
 
 impl Session {
-    pub fn new() -> Self {
-        Self::default()
+    /// エントリが static に置くので, const で作れるようにする.
+    pub const fn new() -> Self {
+        Self {
+            applications: Vec::new(),
+            instances: Vec::new(),
+            windows: Vec::new(),
+            front_window_id: 0,
+            last_instance_id: 0,
+            last_window_id: 0,
+        }
     }
 
     /// リクエストを1つ処理し, レスポンスとその間に起きたイベントを返す.
