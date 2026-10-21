@@ -68,6 +68,17 @@
       }
     },
     {
+      "files": ["src/session/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)(agate|passion|view|apps)(/|$)", "message": "session は他の層を知らない." },
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "session は他の層を知らない." }
+          ]
+        }]
+      }
+    },
+    {
       "files": ["src/view/**"],
       "rules": {
         "no-restricted-imports": ["error", {

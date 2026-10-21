@@ -46,7 +46,7 @@
     "build": "pnpm gen && vite build && tsc -p tsconfig.build.json",
     "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
-    "test": "pnpm gen && vitest run"
+    "test": "pnpm gen && pnpm build:wasm && vitest run"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.74.0",

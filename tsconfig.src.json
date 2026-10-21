@@ -20,5 +20,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // テストは Node の API を使うので, tsconfig.test.json で別に検査する. 配るコードからは Node の API を使えないままにする.
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }
