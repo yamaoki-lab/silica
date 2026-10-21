@@ -1,0 +1,84 @@
+[
+  {
+    "name": "親だけを止めるモーダルは, 開いている間, 親を前面にするリクエストを断る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "保存", "attributes": {"parentWindowId": 1, "modality": "WINDOW_MODALITY_PARENT"}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "保存", "attributes": {"parentWindowId": 1, "modality": "WINDOW_MODALITY_PARENT"}}}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"rejected": {"reason": "REJECT_REASON_BLOCKED_BY_MODAL"}}},
+      {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"closeWindow": {"windowId": 3}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 1}}]}
+    ]
+  },
+  {
+    "name": "親だけを止めるモーダルには親が要る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "保存", "attributes": {"modality": "WINDOW_MODALITY_PARENT"}}}, "response": {"rejected": {"reason": "REJECT_REASON_INVALID_PARENT"}}}
+    ]
+  },
+  {
+    "name": "モーダルを閉じると, 止めていた親が前面になる",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "保存", "attributes": {"parentWindowId": 1, "modality": "WINDOW_MODALITY_PARENT"}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "保存", "attributes": {"parentWindowId": 1, "modality": "WINDOW_MODALITY_PARENT"}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"closeWindow": {"windowId": 2}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 2}}, {"frontWindowChanged": {"windowId": 1}}]}
+    ]
+  },
+  {
+    "name": "アプリケーション全体を止めるモーダルは, 同じインスタンスの他のウインドウを止める",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}, {"id": "viewer"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "viewer"}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "viewer"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 2, "title": "表示", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 2, "title": "表示", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"rejected": {"reason": "REJECT_REASON_BLOCKED_BY_MODAL"}}},
+      {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"bringWindowToFront": {"windowId": 3}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 3}}]}
+    ]
+  },
+  {
+    "name": "モーダルの子孫は止めない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "色", "attributes": {"parentWindowId": 2}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "色", "attributes": {"parentWindowId": 2}}}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"bringWindowToFront": {"windowId": 3}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 3}}]}
+    ]
+  },
+  {
+    "name": "モーダルが止めているウインドウは, 開いても前面にならない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類", "attributes": {}}}}]}
+    ]
+  },
+  {
+    "name": "前面のウインドウを閉じた時, モーダルが止めているウインドウは選ばない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}, {"id": "viewer"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "viewer"}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "viewer"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 2, "title": "表示", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 2, "title": "表示", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "設定", "attributes": {"modality": "WINDOW_MODALITY_APPLICATION"}}}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"bringWindowToFront": {"windowId": 3}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"closeWindow": {"windowId": 2}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 2}}, {"frontWindowChanged": {"windowId": 3}}]}
+    ]
+  }
+]

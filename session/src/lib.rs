@@ -4,6 +4,13 @@
 // std の panic の処理は文字列の整形を引き込み, wasm を大きくする. wasm 向けは core と alloc だけで書く.
 #![cfg_attr(target_arch = "wasm32", no_std)]
 
+extern crate alloc;
+
+mod entry;
+mod state;
+
+pub use state::Session;
+
 // 既定のアロケータ (dlmalloc) より小さい.
 #[cfg(all(target_arch = "wasm32", not(target_feature = "atomics")))]
 #[global_allocator]
@@ -29,18 +36,4 @@ pub mod proto {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::proto::{ListWindows, Request, request};
-    use prost::Message as _;
-
-    #[test]
-    fn scene_json_request_round_trips_through_bytes() {
-        let request: Request = serde_json::from_str(r#"{ "listWindows": {} }"#).unwrap();
-        assert_eq!(
-            request.body,
-            Some(request::Body::ListWindows(ListWindows {}))
-        );
-        let decoded = Request::decode(request.encode_to_vec().as_slice()).unwrap();
-        assert_eq!(decoded, request);
-    }
-}
+mod scenario_tests;

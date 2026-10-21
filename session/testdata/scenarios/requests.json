@@ -1,0 +1,8 @@
+[
+  {
+    "name": "知らないリクエストには非対応と返す",
+    "steps": [
+      {"request": {}, "response": {"unsupported": {}}}
+    ]
+  }
+]

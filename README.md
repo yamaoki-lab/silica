@@ -10,12 +10,12 @@ Web の画面のフレームワーク. ウインドウの管理, メニュー, �
 - `src/passion/`: 見た目
 - `src/view/`: アプリケーションとの契約と, agate と passion を組み合わせるコンポーネント
 - `src/apps/`: 付属のアプリケーション. `silica/apps` から import する
-- `src/session/`: セッションを TS から使う所. .proto から生成した型とセッションの wasm もここに作られる (リポジトリには入れない)
-- `session/`: セッション (Rust). アプリケーションとウインドウの状態のうち, OS から見えない側を持つ. ページへは wasm で渡す
+- `src/session/`: セッションを TS から使う所 (ラッパーと, wasm を読んで立ち上げる処理). .proto から生成した型とセッションの wasm もここに作られる (リポジトリには入れない)
+- `session/`: セッション (Rust). アプリケーションとウインドウの状態のうち, OS から見えない側を持つ. ページへは wasm で渡す. テストのシナリオは `session/testdata/scenarios/` にあり, cargo test と pnpm test の両方で流す
 - `proto/`: ページやシェルとセッションの間で受け渡すメッセージ
 - `example/`: silica を使う側のサンプル
 
-レイヤの依存の向きは `view → agate` と `view → passion` だけで, lint で縛っています. 付属のアプリケーションも, 外のアプリケーションと同じく公開のエントリ (`src/index.ts`) だけを使います.
+レイヤの依存の向きは `view → agate`, `view → passion`, `view → session` だけで, lint で縛っています. 付属のアプリケーションも, 外のアプリケーションと同じく公開のエントリ (`src/index.ts`) だけを使います.
 
 動作を確かめるブラウザは, 主に Firefox Developer Edition と WebView2 の, それぞれ最新版です (2026年9月の時点で, Firefox Developer Edition 157 と WebView2 154).
 
@@ -35,7 +35,7 @@ pnpm check:size # セッションの大きさを測る (先に build:wasm)
 cargo test      # セッションのテスト
 ```
 
-dev, typecheck, test, build は, 先に .proto から TS の型を作ります (`pnpm gen`).
+dev, typecheck, test, build は, 先に .proto から TS の型を作ります (`pnpm gen`). test はセッションの wasm もビルドします.
 
 ## ライセンス
 

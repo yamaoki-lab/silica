@@ -4,30 +4,290 @@ syntax = "proto3";
 
 package silica.session.v1alpha1;
 
-// セッションへの頼みごと. 1回の呼び出しで1つ渡す.
+// セッションへのリクエスト. 1回の呼び出しで1つ渡す.
 message Request {
   oneof body {
     ListWindows list_windows = 1;
+    RegisterApplications register_applications = 2;
+    OpenApplication open_application = 3;
+    OpenWindow open_window = 4;
+    CloseWindow close_window = 5;
+    BringWindowToFront bring_window_to_front = 6;
   }
 }
 
-// 頼みごとへの返事. どの頼みごとにも, 返す形が1つ決まっている.
+// リクエストへのレスポンス. どのリクエストにも, 成功した時に返す形が1つ決まっている.
+// 失敗した時は, どのリクエストでも Rejected か Unsupported を返す.
 message Response {
   oneof body {
     WindowList window_list = 1;
+    Done done = 2;
+    OpenApplicationResult open_application_result = 3;
+    OpenWindowResult open_window_result = 4;
+    Rejected rejected = 5;
+    Unsupported unsupported = 6;
   }
 }
 
-// 開いているウインドウを全て返してもらう.
-message ListWindows {}
+// 1回の呼び出しの結果. レスポンスと, その処理の間に起きたイベントを起きた順に並べる.
+// セッションは自分からは動かないので, イベントはいつもリクエストの処理の間に起きる.
+message Output {
+  Response response = 1;
+  repeated Event events = 2;
+}
 
-// ListWindows の返事.
+// セッションからページやシェルへ知らせる, 状態の変化.
+message Event {
+  oneof body {
+    InstanceCreated instance_created = 1;
+    ForwardedToInstance forwarded_to_instance = 2;
+    WindowOpened window_opened = 3;
+    WindowClosed window_closed = 4;
+    FrontWindowChanged front_window_changed = 5;
+  }
+}
+
+// リクエスト
+
+// 開いているウインドウを, 最後に前面になった順に返してもらう.
+message ListWindows {
+  // ウインドウの一覧 (切り替え) に出さないウインドウも含める.
+  bool include_excluded = 1;
+}
+
+// アプリケーションの宣言のうち, セッションが要る所を登録する. 立ち上げの時にラッパーが送る.
+// 1つでも重複や形の誤りがあれば, どれも登録しない.
+message RegisterApplications {
+  repeated Application applications = 1;
+}
+
+// アプリケーションを開く. 実行中のインスタンスがあればそこへ渡し, 無ければ作る.
+// 単一インスタンスのアプリケーションは, new_instance に関わらず, 実行中のインスタンスへ渡す.
+message OpenApplication {
+  string application_id = 1;
+  // 実行中のインスタンスがあっても, 新しく起動する.
+  bool new_instance = 2;
+}
+
+// インスタンスのウインドウを開く. 開いたウインドウは前面になる.
+// ただし前面を奪わないウインドウと, モーダルのために前面にできないウインドウは前面にならない.
+message OpenWindow {
+  uint32 instance_id = 1;
+  string title = 2;
+  WindowAttributes attributes = 3;
+}
+
+// ウインドウを閉じる. 子のウインドウも一緒に閉じる.
+message CloseWindow {
+  uint32 window_id = 1;
+}
+
+// ウインドウを前面にする. モーダルのウインドウが止めている時は断る.
+message BringWindowToFront {
+  uint32 window_id = 1;
+}
+
+// 成功した時のレスポンス
+
+// ListWindows のレスポンス.
 message WindowList {
   repeated Window windows = 1;
 }
 
-// セッションが持つウインドウ.
+// 返す値の無いリクエストが成功した.
+message Done {}
+
+// OpenApplication のレスポンス. 作ったか渡したかは, イベントで分かる.
+message OpenApplicationResult {
+  uint32 instance_id = 1;
+}
+
+// OpenWindow のレスポンス.
+message OpenWindowResult {
+  uint32 window_id = 1;
+}
+
+// 失敗した時のレスポンス
+
+// セッションが分かるリクエストだが, 今の状態では受け付けられない.
+message Rejected {
+  RejectReason reason = 1;
+}
+
+enum RejectReason {
+  REJECT_REASON_UNSPECIFIED = 0;
+  // 登録していないアプリケーションの id.
+  REJECT_REASON_UNKNOWN_APPLICATION = 1;
+  // アプリケーションの id の形が誤っている (使える文字は小文字の a-z, 0-9, -).
+  REJECT_REASON_INVALID_APPLICATION_ID = 2;
+  // 登録済みのアプリケーションか, 同じリクエストの中で重なった id.
+  REJECT_REASON_DUPLICATE_APPLICATION = 3;
+  REJECT_REASON_UNKNOWN_INSTANCE = 4;
+  REJECT_REASON_UNKNOWN_WINDOW = 5;
+  // 親が無いか, 親が別のインスタンスのウインドウ. 親だけを止めるモーダルに親が無い時も.
+  REJECT_REASON_INVALID_PARENT = 6;
+  // モーダルのウインドウが止めているので, 前面にできない.
+  REJECT_REASON_BLOCKED_BY_MODAL = 7;
+  // 前面にならないウインドウ (WINDOW_ACTIVATION_NEVER).
+  REJECT_REASON_NOT_ACTIVATABLE = 8;
+}
+
+// セッションが知らないリクエスト. ページやシェルがセッションより新しい時に返る.
+message Unsupported {}
+
+// イベント
+
+message InstanceCreated {
+  uint32 instance_id = 1;
+  string application_id = 2;
+}
+
+// アプリケーションを開いた時に, 新しく作らず既存のインスタンスに渡した.
+message ForwardedToInstance {
+  uint32 instance_id = 1;
+}
+
+message WindowOpened {
+  Window window = 1;
+}
+
+message WindowClosed {
+  uint32 window_id = 1;
+}
+
+// 前面のウインドウが替わった. 0 は前面のウインドウが無いこと.
+message FrontWindowChanged {
+  uint32 window_id = 1;
+}
+
+// セッションが持つもの
+
+// アプリケーションの宣言のうち, セッションが要る所.
+message Application {
+  string id = 1;
+  bool single_instance = 2;
+}
+
 message Window {
-  // セッションが 1 から順に振る. 0 は使わない.
+  // セッションが 1 から順に振る. 0 は使わない. インスタンスの id とは別に振る.
   uint32 id = 1;
+  // 所有者のインスタンス.
+  uint32 instance_id = 2;
+  string title = 3;
+  WindowAttributes attributes = 4;
+}
+
+// ウインドウの属性. 役割は既定値を決めるだけで, 個々の属性は別に指定できる.
+// 役割の既定値は, ラッパーがウインドウの種類 (開くウインドウのひな形) から埋めて送る.
+// セッションは UNSPECIFIED と省いた値を, それぞれの属性の注記の通りに扱う.
+// セッションが振る舞いまで持つのは, 親, 前面になるか, モーダル, 一覧に出すか. 残りは持って渡すだけ.
+message WindowAttributes {
+  WindowRole role = 1;
+  // 親のウインドウ. 0 は親が無いこと. 親は同じインスタンスのウインドウに限る.
+  uint32 parent_window_id = 2;
+  WindowLayer layer = 3;
+  // アプリケーションが前面でない時に隠す.
+  bool hide_when_inactive = 4;
+  WindowActivation activation = 5;
+  WindowModality modality = 6;
+  WindowFrame frame = 7;
+  // フレームが無い時の形. 省くと矩形.
+  WindowShape shape = 8;
+  // 省くと, フレームが標準なら影を付け, 無しなら付けない.
+  optional bool shadow = 9;
+  WindowTitleBar title_bar = 10;
+  WindowTitleBarOrientation title_bar_orientation = 11;
+  // 操作を許すか. 省くと許す.
+  optional bool closable = 12;
+  optional bool minimizable = 13;
+  optional bool resizable = 14;
+  optional bool zoomable = 15;
+  WindowZoomTarget zoom_target = 16;
+  // ウインドウの一覧 (切り替え) に出さない.
+  bool exclude_from_window_list = 17;
+}
+
+// 置き方と, 他の属性の既定値を決める.
+enum WindowRole {
+  WINDOW_ROLE_UNSPECIFIED = 0;
+  WINDOW_ROLE_DOCUMENT = 1;
+  WINDOW_ROLE_PANEL = 2;
+  WINDOW_ROLE_DIALOG = 3;
+  WINDOW_ROLE_SPLASH = 4;
+}
+
+// 重なり順は層ごとに決まる. UNSPECIFIED は通常.
+enum WindowLayer {
+  WINDOW_LAYER_UNSPECIFIED = 0;
+  // 書類より常に上.
+  WINDOW_LAYER_PANEL = 1;
+}
+
+// 前面になるか. UNSPECIFIED は通常 (開いた時とクリックで前面になる).
+enum WindowActivation {
+  WINDOW_ACTIVATION_UNSPECIFIED = 0;
+  // 前面を奪わない. 前面にするリクエストを断る.
+  WINDOW_ACTIVATION_NEVER = 1;
+  // キー入力が要る時だけ前面になる. 開いた時は前面にならず, 前面にするリクエストは受ける.
+  WINDOW_ACTIVATION_ON_KEY_INPUT = 2;
+}
+
+// UNSPECIFIED はモーダルでない.
+enum WindowModality {
+  WINDOW_MODALITY_UNSPECIFIED = 0;
+  // 開いている間, 親を前面にするリクエストを断る.
+  WINDOW_MODALITY_PARENT = 1;
+  // 開いている間, 同じインスタンスの他のウインドウ (自分の子孫を除く) を前面にするリクエストを断る.
+  WINDOW_MODALITY_APPLICATION = 2;
+}
+
+// UNSPECIFIED は標準のフレーム.
+enum WindowFrame {
+  WINDOW_FRAME_UNSPECIFIED = 0;
+  WINDOW_FRAME_NONE = 1;
+}
+
+// フレームが無い時の輪郭. ウインドウの矩形に合わせて描く (暫定方針. #7 の "形の輪郭の書き方").
+message WindowShape {
+  oneof outline {
+    // 矩形に収まる最大の円.
+    Circle circle = 1;
+    // 矩形に内接する楕円.
+    Ellipse ellipse = 2;
+    RoundedRectangle rounded_rectangle = 3;
+    // SVG の path の d 属性. 座標はウインドウの左上を原点にした CSS の px.
+    string svg_path = 4;
+  }
+}
+
+message Circle {}
+
+message Ellipse {}
+
+message RoundedRectangle {
+  // 角の半径 (CSS の px).
+  float corner_radius = 1;
+}
+
+// UNSPECIFIED は標準のタイトルバー.
+enum WindowTitleBar {
+  WINDOW_TITLE_BAR_UNSPECIFIED = 0;
+  WINDOW_TITLE_BAR_COMPACT = 1;
+  // 動かさないウインドウ. ドラッグの領域もウインドウを操作するボタンも持たない.
+  WINDOW_TITLE_BAR_NONE = 2;
+  // 見た目はアプリケーションが描く. タイトルバーの振る舞いは残る.
+  WINDOW_TITLE_BAR_CUSTOM = 3;
+}
+
+// 標準とコンパクトのタイトルバーの向き. UNSPECIFIED は横 (ウインドウの上).
+enum WindowTitleBarOrientation {
+  WINDOW_TITLE_BAR_ORIENTATION_UNSPECIFIED = 0;
+  // ウインドウの横に縦に置く.
+  WINDOW_TITLE_BAR_ORIENTATION_VERTICAL = 1;
+}
+
+// ズームの行き先. UNSPECIFIED は希望サイズ.
+enum WindowZoomTarget {
+  WINDOW_ZOOM_TARGET_UNSPECIFIED = 0;
+  WINDOW_ZOOM_TARGET_FILL_VIEWPORT = 1;
 }

@@ -1,0 +1,103 @@
+[
+  {
+    "name": "開いたウインドウは前面になる",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]}
+    ]
+  },
+  {
+    "name": "知らないインスタンスには開かない",
+    "steps": [
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1"}}, "response": {"rejected": {"reason": "REJECT_REASON_UNKNOWN_INSTANCE"}}}
+    ]
+  },
+  {
+    "name": "前面のウインドウを閉じると, 最後に前面になったウインドウが前面になる",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 3", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "書類 3", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"closeWindow": {"windowId": 1}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 1}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"closeWindow": {"windowId": 3}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 3}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"closeWindow": {"windowId": 2}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 2}}, {"frontWindowChanged": {"windowId": 0}}]}
+    ]
+  },
+  {
+    "name": "前面でないウインドウを閉じても, 前面は替わらない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"closeWindow": {"windowId": 1}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 1}}]}
+    ]
+  },
+  {
+    "name": "前面のウインドウは, インスタンスをまたいで替わる",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}, {"id": "viewer"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "viewer"}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "viewer"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 2, "title": "表示", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 2, "title": "表示", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"closeWindow": {"windowId": 2}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 2}}, {"frontWindowChanged": {"windowId": 1}}]}
+    ]
+  },
+  {
+    "name": "親を閉じると, 子孫を子から先に閉じる",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "パネル", "attributes": {"parentWindowId": 1}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "パネル", "attributes": {"parentWindowId": 1}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "ダイアログ", "attributes": {"parentWindowId": 2}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "ダイアログ", "attributes": {"parentWindowId": 2}}}}, {"frontWindowChanged": {"windowId": 3}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "別の書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 4}}, "events": [{"windowOpened": {"window": {"id": 4, "instanceId": 1, "title": "別の書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 4}}]},
+      {"request": {"closeWindow": {"windowId": 1}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 3}}, {"windowClosed": {"windowId": 2}}, {"windowClosed": {"windowId": 1}}]}
+    ]
+  },
+  {
+    "name": "親は同じインスタンスの開いているウインドウに限る",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openApplication": {"applicationId": "editor", "newInstance": true}}, "response": {"openApplicationResult": {"instanceId": 2}}, "events": [{"instanceCreated": {"instanceId": 2, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 2, "title": "パネル", "attributes": {"parentWindowId": 1}}}, "response": {"rejected": {"reason": "REJECT_REASON_INVALID_PARENT"}}},
+      {"request": {"openWindow": {"instanceId": 1, "title": "パネル", "attributes": {"parentWindowId": 9}}}, "response": {"rejected": {"reason": "REJECT_REASON_INVALID_PARENT"}}}
+    ]
+  },
+  {
+    "name": "前面にする. 既に前面なら何も起きない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"done": {}}}
+    ]
+  },
+  {
+    "name": "知らないウインドウは閉じず, 前面にもしない",
+    "steps": [
+      {"request": {"closeWindow": {"windowId": 1}}, "response": {"rejected": {"reason": "REJECT_REASON_UNKNOWN_WINDOW"}}},
+      {"request": {"bringWindowToFront": {"windowId": 1}}, "response": {"rejected": {"reason": "REJECT_REASON_UNKNOWN_WINDOW"}}}
+    ]
+  },
+  {
+    "name": "閉じたウインドウの id は使い直さない",
+    "steps": [
+      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
+      {"request": {"closeWindow": {"windowId": 1}}, "response": {"done": {}}, "events": [{"windowClosed": {"windowId": 1}}, {"frontWindowChanged": {"windowId": 0}}]},
+      {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 2}}]}
+    ]
+  }
+]
