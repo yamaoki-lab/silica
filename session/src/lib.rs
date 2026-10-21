@@ -34,11 +34,11 @@ mod tests {
     use prost::Message as _;
 
     #[test]
-    fn scene_json_request_round_trips_through_bytes() {
+    fn scenario_json_request_round_trips_through_bytes() {
         let request: Request = serde_json::from_str(r#"{ "listWindows": {} }"#).unwrap();
         assert_eq!(
             request.body,
-            Some(request::Body::ListWindows(ListWindows {}))
+            Some(request::Body::ListWindows(ListWindows::default()))
         );
         let decoded = Request::decode(request.encode_to_vec().as_slice()).unwrap();
         assert_eq!(decoded, request);

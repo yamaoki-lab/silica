@@ -6,7 +6,7 @@ import * as pbJson from './gen-json/silica/session/v1alpha1/session.ts';
 
 test('シナリオの JSON のリクエストがバイト列を往復する', () => {
   const request: pb.Request = pbJson.Request.fromJSON({ listWindows: {} });
-  expect(request).toEqual({ body: { $case: 'listWindows', value: {} } });
+  expect(request).toEqual({ body: { $case: 'listWindows', value: { includeExcluded: false } } });
   const decoded = pb.Request.decode(pb.Request.encode(request).finish());
   expect(decoded).toEqual(request);
 });
