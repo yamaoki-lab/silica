@@ -326,12 +326,25 @@ impl Session {
     }
 }
 
-/// 使える文字は小文字の a-z, 0-9, - (#9 の項目 7).
+/// ドットで区切った2段以上で, 各段は空でなく, 使える文字は小文字の a-z, 0-9, - (#9 の項目 2).
 fn is_valid_application_id(id: &str) -> bool {
-    !id.is_empty()
-        && id
-            .bytes()
-            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+    // split と all で書くと, 反復子の分だけ wasm が大きくなるので, バイトを1回なめる.
+    let mut segments = 1;
+    let mut segment_len = 0;
+    for b in id.bytes() {
+        if b == b'.' {
+            if segment_len == 0 {
+                return false;
+            }
+            segments += 1;
+            segment_len = 0;
+        } else if b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' {
+            segment_len += 1;
+        } else {
+            return false;
+        }
+    }
+    segments >= 2 && segment_len > 0
 }
 
 fn opened_application(instance_id: u32) -> response::Body {

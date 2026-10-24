@@ -2,8 +2,8 @@
   {
     "name": "最後に前面になった順に並べ, 前面になったことの無いものは開いた順に後ろへ並べる",
     "steps": [
-      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
-      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"registerApplications": {"applications": [{"id": "yamaoki.editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "yamaoki.editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "yamaoki.editor"}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "書類 1", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類 1", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "パネル", "attributes": {"activation": "WINDOW_ACTIVATION_NEVER"}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "パネル", "attributes": {"activation": "WINDOW_ACTIVATION_NEVER"}}}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "書類 2", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "書類 2", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 3}}]},
@@ -14,8 +14,8 @@
   {
     "name": "一覧に出さないウインドウは, リクエストで指定した時だけ含める",
     "steps": [
-      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
-      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"registerApplications": {"applications": [{"id": "yamaoki.editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "yamaoki.editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "yamaoki.editor"}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "スプラッシュ", "attributes": {"excludeFromWindowList": true}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "スプラッシュ", "attributes": {"excludeFromWindowList": true}}}}, {"frontWindowChanged": {"windowId": 2}}]},
       {"request": {"listWindows": {}}, "response": {"windowList": {"windows": [{"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}]}}},
