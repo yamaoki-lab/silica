@@ -51,16 +51,16 @@ describe('loadSession', () => {
 
   test('立ち上げの時に, 渡したアプリケーションを登録する', async () => {
     const session = await loadSession(new Response(wasm), {
-      applications: [{ id: 'editor', singleInstance: false }],
+      applications: [{ id: 'yamaoki.editor', singleInstance: false }],
     });
     const response = session.send({
-      body: { $case: 'openApplication', value: { applicationId: 'editor', newInstance: false } },
+      body: { $case: 'openApplication', value: { applicationId: 'yamaoki.editor', newInstance: false } },
     });
     expect(response).toEqual({ body: { $case: 'openApplicationResult', value: { instanceId: 1 } } });
   });
 
   test('登録できない時は立ち上げに失敗する', async () => {
-    const applications = [{ id: 'editor', singleInstance: false }, { id: 'editor', singleInstance: false }];
+    const applications = [{ id: 'yamaoki.editor', singleInstance: false }, { id: 'yamaoki.editor', singleInstance: false }];
     await expect(loadSession(new Response(wasm), { applications })).rejects.toThrow(
       'REJECT_REASON_DUPLICATE_APPLICATION',
     );

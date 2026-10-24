@@ -8,9 +8,9 @@ const wasm = readFileSync(new URL('./session.wasm', import.meta.url));
 
 async function sessionWithInstance(): Promise<Session> {
   const session = await loadSession(new Response(wasm), {
-    applications: [{ id: 'editor', singleInstance: false }],
+    applications: [{ id: 'yamaoki.editor', singleInstance: false }],
   });
-  session.send({ body: { $case: 'openApplication', value: { applicationId: 'editor', newInstance: false } } });
+  session.send({ body: { $case: 'openApplication', value: { applicationId: 'yamaoki.editor', newInstance: false } } });
   return session;
 }
 
