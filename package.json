@@ -43,7 +43,7 @@
     "build:wasm": "node scripts/build-wasm.ts",
     "check:size": "node scripts/check-size.ts",
     "dev": "pnpm gen && pnpm --filter silica-example dev",
-    "build": "pnpm gen && vite build && tsc -p tsconfig.build.json",
+    "build": "pnpm gen && pnpm build:wasm && vite build && tsc -p tsconfig.build.json",
     "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
     "test": "pnpm gen && pnpm build:wasm && vitest run"
