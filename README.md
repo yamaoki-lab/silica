@@ -35,7 +35,7 @@ pnpm check:size # セッションの大きさを測る (先に build:wasm)
 cargo test      # セッションのテスト
 ```
 
-dev, typecheck, test, build は, 先に .proto から TS の型を作ります (`pnpm gen`). test はセッションの wasm もビルドします.
+dev, typecheck, test, build は, 先に .proto から TS の型を作ります (`pnpm gen`). test と build はセッションの wasm もビルドします. build は wasm を dist に入れます.
 
 ## ライセンス
 
