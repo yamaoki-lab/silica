@@ -118,7 +118,7 @@ enum RejectReason {
   REJECT_REASON_UNSPECIFIED = 0;
   // 登録していないアプリケーションの id.
   REJECT_REASON_UNKNOWN_APPLICATION = 1;
-  // アプリケーションの id の形が誤っている (使える文字は小文字の a-z, 0-9, -).
+  // アプリケーションの id の形が誤っている (ドットで区切った2段以上. 各段は空でなく, 使える文字は小文字の a-z, 0-9, -).
   REJECT_REASON_INVALID_APPLICATION_ID = 2;
   // 登録済みのアプリケーションか, 同じリクエストの中で重なった id.
   REJECT_REASON_DUPLICATE_APPLICATION = 3;
