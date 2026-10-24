@@ -7,7 +7,7 @@ import '@react-spectrum/s2/page.css'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider background="base">
-      <p className={style({ font: 'body' })}>silica の見本</p>
+      <p className={style({ font: 'body' })}>silica のサンプル</p>
     </Provider>
   </StrictMode>,
 )
