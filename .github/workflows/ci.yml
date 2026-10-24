@@ -44,5 +44,11 @@ jobs:
       - run: pnpm build
       # サイズ上限を超えたら落とす. 値はジョブの要約にも出す.
       - run: pnpm check:size
+      # 使う側と同じく, パッケージ (tgz) から入れた silica でサンプルをビルドする.
+      # パッケージに入れ忘れたファイルや, node_modules の中に置いた時だけ起きる壊れ方を見つける.
+      # 新しく取りに行くものは無いはずなので, --offline で取りに行かないことも確かめる.
       - name: build (example)
-        run: pnpm --filter silica-example build
+        run: |
+          pnpm pack --pack-destination "$RUNNER_TEMP/pack"
+          pnpm --filter silica-example add "silica@file:$(echo "$RUNNER_TEMP"/pack/silica-*.tgz)" --offline
+          pnpm --filter silica-example build
