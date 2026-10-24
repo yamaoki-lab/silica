@@ -29,13 +29,15 @@ pnpm dev        # サンプルを開く
 pnpm typecheck
 pnpm lint
 pnpm test
-pnpm build      # dist にビルドする
+pnpm build      # 型の宣言とセッションの wasm を作る
 pnpm build:wasm # セッションの wasm をビルドする
 pnpm check:size # セッションの大きさを測る (先に build:wasm)
 cargo test      # セッションのテスト
 ```
 
-dev, typecheck, test, build は, 先に .proto から TS の型を作ります (`pnpm gen`). test と build はセッションの wasm もビルドします. build は wasm を dist に入れます.
+dev, typecheck, test, build は, 先に .proto から TS の型を作ります (`pnpm gen`). test と build はセッションの wasm もビルドします.
+
+silica は TS のソースのまま配り, 使う側のビルドが一緒にビルドします. パッケージ (`pnpm pack` の tgz) には, ソースと, 型の宣言 (`dist` の .d.ts) と, ビルド済みのセッションの wasm が入ります.
 
 ## ライセンス
 
