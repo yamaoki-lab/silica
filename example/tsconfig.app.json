@@ -5,6 +5,7 @@
     "lib": ["ESNext", "DOM"],
     "module": "esnext",
     "types": ["vite/client"],
+    // silica の型を, ビルドした .d.ts ではなくソースから読む. ビルドせずに型を検査でき, エディタにもすぐ効く.
     "customConditions": ["silica-source"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,

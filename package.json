@@ -12,29 +12,33 @@
   "sideEffects": false,
   "packageManager": "pnpm@12.6.0",
   "files": [
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/testdata",
+    "!src/session/gen-json",
     "dist"
   ],
   "exports": {
     ".": {
       "silica-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "default": "./src/index.ts"
     },
     "./apps": {
       "silica-source": "./src/apps/index.ts",
       "types": "./dist/apps/index.d.ts",
-      "default": "./dist/apps/index.js"
+      "default": "./src/apps/index.ts"
     }
   },
   "publishConfig": {
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "default": "./src/index.ts"
       },
       "./apps": {
         "types": "./dist/apps/index.d.ts",
-        "default": "./dist/apps/index.js"
+        "default": "./src/apps/index.ts"
       }
     }
   },
@@ -43,7 +47,8 @@
     "build:wasm": "node scripts/build-wasm.ts",
     "check:size": "node scripts/check-size.ts",
     "dev": "pnpm gen && pnpm --filter silica-example dev",
-    "build": "pnpm gen && vite build && tsc -p tsconfig.build.json",
+    "build": "pnpm gen && pnpm build:wasm && tsc -p tsconfig.build.json",
+    "prepack": "pnpm build",
     "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
     "test": "pnpm gen && pnpm build:wasm && vitest run"
