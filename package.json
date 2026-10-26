@@ -16,6 +16,7 @@
     "!src/**/*.test.ts",
     "!src/**/testdata",
     "!src/session/gen-json",
+    "!src/vite",
     "dist"
   ],
   "exports": {
@@ -28,6 +29,11 @@
       "silica-source": "./src/apps/index.ts",
       "types": "./dist/apps/index.d.ts",
       "default": "./src/apps/index.ts"
+    },
+    "./vite": {
+      "silica-source": "./src/vite/index.ts",
+      "types": "./dist/vite/index.d.ts",
+      "default": "./dist/vite/index.js"
     }
   },
   "publishConfig": {
@@ -39,15 +45,20 @@
       "./apps": {
         "types": "./dist/apps/index.d.ts",
         "default": "./src/apps/index.ts"
+      },
+      "./vite": {
+        "types": "./dist/vite/index.d.ts",
+        "default": "./dist/vite/index.js"
       }
     }
   },
   "scripts": {
     "gen": "buf generate",
     "build:wasm": "node scripts/build-wasm.ts",
+    "build:vite": "tsc -p tsconfig.vite.json",
     "check:size": "node scripts/check-size.ts",
-    "dev": "pnpm gen && pnpm --filter silica-example dev",
-    "build": "pnpm gen && pnpm build:wasm && tsc -p tsconfig.build.json",
+    "dev": "pnpm gen && pnpm build:vite && pnpm --filter silica-example dev",
+    "build": "pnpm gen && pnpm build:wasm && tsc -p tsconfig.build.json && pnpm build:vite",
     "prepack": "pnpm build",
     "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
@@ -64,6 +75,10 @@
     "vitest": "^5.0.2"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "2.16.0"
+    "@bufbuild/protobuf": "2.16.0",
+    "unplugin-parcel-macros": "0.2.0"
+  },
+  "peerDependencies": {
+    "vite": "^8.3.1"
   }
 }
