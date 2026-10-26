@@ -2,8 +2,8 @@
   {
     "name": "前面を奪わないウインドウは, 開いても前面にならず, 前面にするリクエストを断る",
     "steps": [
-      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
-      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"registerApplications": {"applications": [{"id": "yamaoki.editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "yamaoki.editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "yamaoki.editor"}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "パネル", "attributes": {"activation": "WINDOW_ACTIVATION_NEVER"}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "パネル", "attributes": {"activation": "WINDOW_ACTIVATION_NEVER"}}}}]},
       {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"rejected": {"reason": "REJECT_REASON_NOT_ACTIVATABLE"}}}
@@ -12,8 +12,8 @@
   {
     "name": "キー入力が要る時だけ前面になるウインドウは, 開いても前面にならず, 前面にするリクエストは受ける",
     "steps": [
-      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
-      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"registerApplications": {"applications": [{"id": "yamaoki.editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "yamaoki.editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "yamaoki.editor"}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "検索", "attributes": {"activation": "WINDOW_ACTIVATION_ON_KEY_INPUT"}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "検索", "attributes": {"activation": "WINDOW_ACTIVATION_ON_KEY_INPUT"}}}}]},
       {"request": {"bringWindowToFront": {"windowId": 2}}, "response": {"done": {}}, "events": [{"frontWindowChanged": {"windowId": 2}}]},
@@ -23,8 +23,8 @@
   {
     "name": "前面のウインドウを閉じた時, 自分から前面にならないウインドウは選ばない",
     "steps": [
-      {"request": {"registerApplications": {"applications": [{"id": "editor"}]}}, "response": {"done": {}}},
-      {"request": {"openApplication": {"applicationId": "editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "editor"}}]},
+      {"request": {"registerApplications": {"applications": [{"id": "yamaoki.editor"}]}}, "response": {"done": {}}},
+      {"request": {"openApplication": {"applicationId": "yamaoki.editor"}}, "response": {"openApplicationResult": {"instanceId": 1}}, "events": [{"instanceCreated": {"instanceId": 1, "applicationId": "yamaoki.editor"}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "書類", "attributes": {}}}, "response": {"openWindowResult": {"windowId": 1}}, "events": [{"windowOpened": {"window": {"id": 1, "instanceId": 1, "title": "書類", "attributes": {}}}}, {"frontWindowChanged": {"windowId": 1}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "検索", "attributes": {"activation": "WINDOW_ACTIVATION_ON_KEY_INPUT"}}}, "response": {"openWindowResult": {"windowId": 2}}, "events": [{"windowOpened": {"window": {"id": 2, "instanceId": 1, "title": "検索", "attributes": {"activation": "WINDOW_ACTIVATION_ON_KEY_INPUT"}}}}]},
       {"request": {"openWindow": {"instanceId": 1, "title": "パネル", "attributes": {"activation": "WINDOW_ACTIVATION_NEVER"}}}, "response": {"openWindowResult": {"windowId": 3}}, "events": [{"windowOpened": {"window": {"id": 3, "instanceId": 1, "title": "パネル", "attributes": {"activation": "WINDOW_ACTIVATION_NEVER"}}}}]},
