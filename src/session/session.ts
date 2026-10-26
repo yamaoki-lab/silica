@@ -1,4 +1,4 @@
-// セッションの wasm を包み, リクエストを送ってレスポンスを受け取る所と, イベントを配る所を持つ.
+// セッションの wasm のラッパー. リクエストを送ってレスポンスを受け取る所と, イベントを配る所を持つ.
 // wasm とのやり取りの形は session/src/entry.rs の注記の通り.
 import * as pb from './gen/silica/session/v1alpha1/session.ts';
 
