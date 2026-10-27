@@ -1,6 +1,6 @@
 # silica
 
-Web の画面のフレームワーク. ウインドウの管理, メニュー, 見た目を持ち, 使う側がアプリケーションを差し込んで組み立てる.
+Web の画面のフレームワーク. ウインドウの管理, メニュー, 見た目を持ち, 使う側がアプリケーションを登録して画面を作る.
 
 作り始めたところで, まだ使えるコンポーネントはありません.
 
@@ -18,7 +18,7 @@ Web の画面のフレームワーク. ウインドウの管理, メニュー, �
 
 レイヤの依存の向きは `view → agate`, `view → passion`, `view → session` だけで, lint で縛っています. 付属のアプリケーションも, 外のアプリケーションと同じく公開のエントリ (`src/index.ts`) だけを使います. `src/vite/` は Node で動くので, ページで動く層を使いません.
 
-動作を確かめるブラウザは, 主に Firefox Developer Edition と WebView2 の, それぞれ最新版です (2026年9月の時点で, Firefox Developer Edition 157 と WebView2 154).
+動作を確かめるブラウザは, 主に Firefox Developer Edition と WebView2 の, それぞれ最新のバージョンです (2026年9月の時点で, Firefox Developer Edition 157 と WebView2 154).
 
 ## 開発
 
