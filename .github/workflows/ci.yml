@@ -46,9 +46,9 @@ jobs:
       - run: pnpm check:size
       # 使う側と同じく, パッケージ (tgz) から入れた silica でサンプルをビルドする.
       # パッケージに入れ忘れたファイルや, node_modules の中に置いた時だけ起きる壊れ方を見つける.
-      # 新しく取りに行くものは無いはずなので, --offline で取りに行かないことも確かめる.
+      # silica の依存を解決するメタデータは, キャッシュが無い PR の最初の回には手元に無いので, --prefer-offline で足りない分だけ取りに行く.
       - name: build (example)
         run: |
           pnpm pack --pack-destination "$RUNNER_TEMP/pack"
-          pnpm --filter silica-example add "silica@file:$(echo "$RUNNER_TEMP"/pack/silica-*.tgz)" --offline
+          pnpm --filter silica-example add "silica@file:$(echo "$RUNNER_TEMP"/pack/silica-*.tgz)" --prefer-offline
           pnpm --filter silica-example build
