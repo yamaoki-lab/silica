@@ -4,6 +4,8 @@
     "target": "esnext",
     "lib": ["ESNext"],
     "types": ["node"],
+    // silica/vite の型を, ビルドした .d.ts ではなくソースから読む (tsconfig.app.json と同じ).
+    "customConditions": ["silica-source"],
     "skipLibCheck": true,
 
     /* Bundler mode */

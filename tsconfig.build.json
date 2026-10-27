@@ -9,5 +9,5 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/session/gen-json"]
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/session/gen-json", "src/vite"]
 }

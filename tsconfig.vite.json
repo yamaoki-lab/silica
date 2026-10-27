@@ -1,0 +1,13 @@
+{
+  // silica/vite を JS と .d.ts にビルドする (pnpm build:vite). 型の検査は tsconfig.node.json と同じ.
+  "extends": "./tsconfig.node.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vite.tsbuildinfo",
+    "noEmit": false,
+    "declaration": true,
+    "rewriteRelativeImportExtensions": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/vite"]
+}

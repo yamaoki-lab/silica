@@ -90,6 +90,17 @@
       }
     },
     {
+      "files": ["src/vite/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)(agate|passion|view|session|apps)(/|$)", "message": "silica/vite は使う側のビルドの時に Node で動く. ページで動くコードを import しない." },
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "silica/vite は使う側のビルドの時に Node で動く. ページで動くコードを import しない." }
+          ]
+        }]
+      }
+    },
+    {
       "files": ["src/apps/**"],
       "rules": {
         "no-restricted-imports": ["error", {

@@ -19,5 +19,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["scripts"]
+  "include": ["scripts", "src/vite"],
+  // テストは tsconfig.test.json で検査する.
+  "exclude": ["src/**/*.test.ts"]
 }
