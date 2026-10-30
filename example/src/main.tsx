@@ -1,13 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { Provider } from '@react-spectrum/s2'
-import { style } from '@react-spectrum/s2/style' with { type: 'macro' }
+import { type AppDeclaration, mount } from 'silica'
 import '@react-spectrum/s2/page.css'
+import { selectedLang } from './cases.ts'
+import { showCaseLinks } from './caseLinks.ts'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider background="base">
-      <p className={style({ font: 'body' })}>silica のサンプル</p>
-    </Provider>
-  </StrictMode>,
-)
+const hello: AppDeclaration = {
+  id: 'yamaoki.example.hello',
+  name: { ja: 'こんにちは', en: 'Hello' },
+  load: () => import('./hello.ts'),
+}
+
+// 文書の言語は描く前に決める. S2 は言語で行の高さを変えるため.
+const lang = selectedLang()
+if (lang !== undefined) document.documentElement.lang = lang
+showCaseLinks()
+
+await mount(document.getElementById('root')!, { apps: [{ app: hello, autostart: true }] })
