@@ -4,6 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>silica のサンプル</title>
+    <style>
+      html, body, #root { height: 100%; margin: 0; }
+      /* 表示を確認する状態を切り替える暫定のリンク (src/caseLinks.ts). 値は仮で, 見やすければよい. 色はシステムカラー. */
+      .case-links {
+        position: fixed;
+        right: 8px;
+        bottom: 8px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 4px 8px;
+        border: 1px solid GrayText;
+        border-radius: 4px;
+        background: Canvas;
+        color: CanvasText;
+        color-scheme: light dark;
+        font: 12px system-ui, sans-serif;
+        opacity: 0.9;
+      }
+      .case-links div { display: flex; gap: 8px; }
+      .case-links a { color: LinkText; }
+      .case-links a[aria-current] { color: CanvasText; font-weight: bold; text-decoration: none; }
+      .case-links pre { margin: 0; font: 11px ui-monospace, monospace; white-space: pre-wrap; max-width: 60ch; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

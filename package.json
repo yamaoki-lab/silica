@@ -57,7 +57,7 @@
     "build:wasm": "node scripts/build-wasm.ts",
     "build:vite": "tsc -p tsconfig.vite.json",
     "check:size": "node scripts/check-size.ts",
-    "dev": "pnpm gen && pnpm build:vite && pnpm --filter silica-example dev",
+    "dev": "pnpm gen && pnpm build:wasm && pnpm build:vite && pnpm --filter silica-example dev",
     "build": "pnpm gen && pnpm build:wasm && tsc -p tsconfig.build.json && pnpm build:vite",
     "prepack": "pnpm build",
     "typecheck": "pnpm gen && tsc -b",
@@ -66,9 +66,14 @@
   },
   "devDependencies": {
     "@bufbuild/buf": "1.74.0",
+    "@react-spectrum/s2": "^1.8.2",
     "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "binaryen": "132.0.0",
     "oxlint": "^1.85.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "ts-proto": "2.18.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
@@ -79,6 +84,9 @@
     "unplugin-parcel-macros": "0.2.0"
   },
   "peerDependencies": {
+    "@react-spectrum/s2": "^1.8.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "vite": "^8.3.1"
   }
 }

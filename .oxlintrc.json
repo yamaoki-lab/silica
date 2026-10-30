@@ -84,7 +84,8 @@
         "no-restricted-imports": ["error", {
           "patterns": [
             { "regex": "(^|/)apps(/|$)", "message": "view は付属のアプリケーションを知らない." },
-            { "regex": "^\\.\\./index(\\.ts)?$", "message": "エントリは view を使う側. view からエントリを import しない." }
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "エントリは view を使う側. view からエントリを import しない." },
+            { "group": ["@react-spectrum/*"], "message": "S2 を読むのは passion だけ. 見た目を差し替える時に passion だけを替えれば済むようにするため." }
           ]
         }]
       }
