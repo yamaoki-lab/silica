@@ -6,9 +6,11 @@ type Point = { x: number; y: number };
 
 // 返した関数で外す.
 export function attachWindowDrag<Id>(handle: HTMLElement, store: WindowStore<Id>, id: Id): () => void {
-  const view = handle.ownerDocument.defaultView;
+  const doc = handle.ownerDocument;
+  const view = doc.defaultView;
   if (view === null) return () => {};
   let gesture: DragGesture | undefined;
+  let captured = false;
   let start: Point = { x: 0, y: 0 };
   let pending: Point | undefined;
   let frame = 0;
@@ -21,20 +23,28 @@ export function attachWindowDrag<Id>(handle: HTMLElement, store: WindowStore<Id>
     pending = undefined;
   };
 
+  // ポインタをキャプチャするのは, 遊びを超えて動き始めた時. 押した時にキャプチャすると, 離した時の pointerup と click が
+  // タイトルバーに届き, タイトルバーの中のボタン (閉じるボタン等) が押せなくなる.
+  // 動き始めるまでは document 上でポインタを追跡し, 遊びを超える前にタイトルバーの外へ出ても追えるようにする.
   const onDown = (event: PointerEvent) => {
     if (gesture !== undefined) return;
     const bounds = store.get(id);
     const next = DragGesture.begin(event);
     if (bounds === undefined || next === undefined) return;
     gesture = next;
+    captured = false;
     start = { x: bounds.x, y: bounds.y };
-    handle.setPointerCapture(event.pointerId);
+    for (const [type, listener] of tracking) doc.addEventListener(type, listener, true);
   };
 
   const onMove = (event: PointerEvent) => {
     if (gesture === undefined || event.pointerId !== gesture.pointerId) return;
     const delta = gesture.update(event);
     if (delta === undefined) return;
+    if (!captured) {
+      captured = true;
+      handle.setPointerCapture(event.pointerId);
+    }
     pending = { x: start.x + delta.x, y: start.y + delta.y };
     if (frame === 0) frame = view.requestAnimationFrame(flush);
   };
@@ -43,20 +53,25 @@ export function attachWindowDrag<Id>(handle: HTMLElement, store: WindowStore<Id>
   const onEnd = (event: PointerEvent) => {
     if (gesture === undefined || event.pointerId !== gesture.pointerId) return;
     gesture = undefined;
+    stopTracking();
     if (frame !== 0) view.cancelAnimationFrame(frame);
     flush();
   };
 
-  const listeners = [
-    ['pointerdown', onDown],
+  const tracking = [
     ['pointermove', onMove],
     ['pointerup', onEnd],
     ['pointercancel', onEnd],
     ['lostpointercapture', onEnd],
   ] as const;
-  for (const [type, listener] of listeners) handle.addEventListener(type, listener);
+  const stopTracking = () => {
+    for (const [type, listener] of tracking) doc.removeEventListener(type, listener, true);
+  };
+
+  handle.addEventListener('pointerdown', onDown);
   return () => {
-    for (const [type, listener] of listeners) handle.removeEventListener(type, listener);
+    handle.removeEventListener('pointerdown', onDown);
+    stopTracking();
     if (frame !== 0) view.cancelAnimationFrame(frame);
   };
 }
