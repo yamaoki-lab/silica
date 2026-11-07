@@ -69,6 +69,17 @@ describe('launch', () => {
     expect(report).toHaveBeenCalledWith('アプリケーション yamaoki.example.broken を起動できなかった', new Error('読めない'));
   });
 
+  test('非同期の起動関数の拒否も, 起動の失敗として報告に渡す', async () => {
+    const failing = declare('yamaoki.example.async', async () => {
+      await Promise.resolve();
+      throw new Error('設定を読めない');
+    });
+    const { session } = await desktop([failing]);
+    const report = vi.fn();
+    await launch(session, failing, report);
+    expect(report).toHaveBeenCalledWith('アプリケーション yamaoki.example.async を起動できなかった', new Error('設定を読めない'));
+  });
+
   test('登録していないアプリケーションは, 起動の失敗として報告に渡す', async () => {
     const { session } = await desktop([]);
     const report = vi.fn();
