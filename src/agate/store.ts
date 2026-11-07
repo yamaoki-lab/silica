@@ -57,9 +57,18 @@ export class WindowStore<Id> {
   // 測った枠の分を受け, 既定の中身の大きさに足してウインドウを置く. 置いた矩形を返す.
   // 1枚目は領域の中央に置き, 2枚目からは同じ group の直前に置いた位置から右下へずらす.
   // 置くのは1回だけで, 2回目からは何もしない (文字の大きさの設定の変化を追うのは後).
+  // 領域がまだ大きさを持たない時 (要素が display: none の間等) は置かずに undefined を返し,
+  // 大きさを持った時に setContainer が置く. 大きさ 0 の領域で置くと, 大きさ 0 のウインドウのまま戻らないため.
   place(id: Id, frame: FrameExtent): Bounds | undefined {
     const record = this.#windows.get(id);
     if (record === undefined || record.bounds !== undefined) return record?.bounds;
+    record.frame = frame;
+    return this.#placeRecord(id, record);
+  }
+
+  #placeRecord(id: Id, record: WindowRecord): Bounds | undefined {
+    const frame = record.frame;
+    if (frame === undefined || !hasArea(this.#container)) return undefined;
     const size = roundSize(
       computeFittedSize(
         { width: DEFAULT_CONTENT_WIDTH, height: DEFAULT_CONTENT_HEIGHT },
@@ -81,7 +90,6 @@ export class WindowStore<Id> {
       cascade.laps = next.laps;
     }
     const bounds = { ...position, ...size };
-    record.frame = frame;
     record.bounds = bounds;
     this.#changed();
     this.#positionChanged(id);
@@ -107,8 +115,12 @@ export class WindowStore<Id> {
   }
 
   // 領域の大きさを変える. 縮んだ時の置き直しは後で追加する.
+  // 領域が大きさを持たない間に測ったウインドウは, ここで置く.
   setContainer(container: ContainerSize): void {
     this.#container = container;
+    for (const [id, record] of this.#windows) {
+      if (record.bounds === undefined) this.#placeRecord(id, record);
+    }
   }
 
   // 置く前は undefined を返す.
@@ -150,6 +162,10 @@ export class WindowStore<Id> {
   #positionChanged(id: Id): void {
     for (const listener of this.#positionListeners.get(id) ?? []) listener();
   }
+}
+
+function hasArea({ width, height }: ContainerSize): boolean {
+  return width > 0 && height > 0;
 }
 
 // 位置と大きさは常に整数で持つ. 小数の位置は文字がにじみ, 置いた後に見かけと記録がずれる元になる.
