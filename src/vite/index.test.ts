@@ -22,7 +22,7 @@ function groupsOf(config: UserConfig): unknown {
 describe('silica', () => {
   test('マクロのプラグインを先に動かす', () => {
     const plugins = silica();
-    expect(plugins.map((p) => p.name)).toEqual(['silica:unplugin-macros', 'silica:config']);
+    expect(plugins.map((p) => p.name)).toEqual(['silica:unplugin-macros', 'silica:config', 'silica:boot']);
     expect(plugins[0]?.enforce).toBe('pre');
   });
 

@@ -3,7 +3,15 @@
 // Node は node_modules の中の .ts の型を取り除かず, Vite の既定の設定の読み方ではそこで止まるため.
 import { statSync } from 'node:fs';
 import type { Plugin, UserConfig } from 'vite';
+import { type BootOptions, silicaBoot } from './boot.ts';
 import { silicaMacros } from './macros.ts';
+
+export type { BootColor, BootOptions } from './boot.ts';
+
+export interface SilicaOptions {
+  // 起動画面 (#13).
+  readonly boot?: BootOptions;
+}
 
 // S2 の CSS はコンポーネントの間で重なりが多いので, 分けずに1つにまとめた方が小さくなる.
 const s2Styles = {
@@ -11,8 +19,8 @@ const s2Styles = {
   test: /macro-(.*)\.css$|@react-spectrum[\\/]s2[\\/].*\.css$/,
 };
 
-export default function silica(): Plugin[] {
-  return [...silicaMacros(), silicaConfig()];
+export default function silica(options: SilicaOptions = {}): Plugin[] {
+  return [...silicaMacros(), silicaConfig(), silicaBoot(options.boot)];
 }
 
 // 使う側の設定に混ぜる値. 使う側が指定しているものは, そちらを優先する.
