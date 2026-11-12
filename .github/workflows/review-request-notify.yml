@@ -6,7 +6,9 @@ on:
 
 jobs:
   notify:
-    if: github.event.pull_request.draft == false
+    # Dependabot が開始した実行には secrets が渡らず, 通知を送れずに落ちる.
+    # Dependabot の PR は緊急性が低いため通知せず, 他の PR とまとめてレビューする.
+    if: github.event.pull_request.draft == false && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     # ready_for_review の時に PR の timeline を読むため
     permissions:
