@@ -48,14 +48,27 @@ function DesktopWindow<Id>({ store, entry, title }: { store: WindowStore<Id>; en
   // タイトルバーの太さは文字の大きさの設定や S2 の倍率で変わるので, 決め打ちにせず実際に描いたものを測る (旧 console の fit と同じ測り方).
   // 位置の購読の後に置くので, 置いた位置はすぐ上の購読から当たる. どちらも画面に出る前に済むので, 置く前の姿は見えない.
   // offset の値は transform の影響を受けない.
+  // デスクトップが display: none の間等, まだ描かれていない時は offset の値が全て 0 で, 枠の分を測れない.
+  // その時は描かれるのを待って測る.
   useLayoutEffect(() => {
     const root = rootRef.current;
     const content = contentRef.current;
     if (root === null || content === null) return;
-    store.place(entry.id, {
-      width: root.offsetWidth - content.offsetWidth,
-      height: root.offsetHeight - content.offsetHeight,
+    const measure = () => {
+      if (root.offsetWidth === 0 && root.offsetHeight === 0) return false;
+      store.place(entry.id, {
+        width: root.offsetWidth - content.offsetWidth,
+        height: root.offsetHeight - content.offsetHeight,
+      });
+      return true;
+    };
+    const view = root.ownerDocument.defaultView;
+    if (measure() || view === null) return;
+    const observer = new view.ResizeObserver(() => {
+      if (measure()) observer.disconnect();
     });
+    observer.observe(root);
+    return () => observer.disconnect();
   }, [store, entry.id]);
 
   useEffect(() => {

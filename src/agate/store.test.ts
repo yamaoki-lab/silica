@@ -76,6 +76,36 @@ describe('place', () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
+  test.for([
+    ['幅と高さが 0', { width: 0, height: 0 }],
+    ['高さだけが 0', { width: 1280, height: 0 }],
+  ] as const)('領域の%s である間は置かず, 大きさを持った時に置く', ([, empty]) => {
+    const store = new WindowStore<number>(empty);
+    store.open(1, 'yamaoki.editor');
+    expect(store.place(1, frame)).toBeUndefined();
+    expect(store.get(1)).toBeUndefined();
+    const onList = vi.fn();
+    const onPosition = vi.fn();
+    store.subscribe(onList);
+    store.subscribePosition(1, onPosition);
+    store.setContainer(container);
+    expect(store.get(1)).toEqual({
+      x: Math.round((container.width - width) / 2),
+      y: Math.round((container.height - height) / 2),
+      width,
+      height,
+    });
+    expect(onList).toHaveBeenCalledTimes(1);
+    expect(onPosition).toHaveBeenCalledTimes(1);
+  });
+
+  test('測る前のウインドウは, 領域が大きさを持っても置かない', () => {
+    const store = new WindowStore<number>({ width: 0, height: 0 });
+    store.open(1, 'yamaoki.editor');
+    store.setContainer(container);
+    expect(store.get(1)).toBeUndefined();
+  });
+
   test('無いウインドウは何もしない', () => {
     const store = new WindowStore<number>(container);
     expect(store.place(1, frame)).toBeUndefined();
