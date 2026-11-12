@@ -70,7 +70,8 @@ export async function launch(
     }
     const instanceId = opened.body.value.instanceId as InstanceId;
     const { default: start } = await app.load();
-    start({
+    // 起動関数は非同期でもよい (#9 の項目 6). 拒否も起動の失敗として受けるため, 戻り値を待つ.
+    await start({
       request: {},
       instanceId,
       openWindow: ({ title }) => {
