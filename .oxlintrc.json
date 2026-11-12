@@ -102,6 +102,17 @@
       }
     },
     {
+      "files": ["src/boot/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "regex": "(^|/)(agate|passion|view|session|apps|vite)(/|$)", "message": "boot は silica/vite とページの両方から参照されるため, 他の層をインポートしてはならない." },
+            { "regex": "^\\.\\./index(\\.ts)?$", "message": "boot は silica/vite とページの両方から参照されるため, 他の層をインポートしてはならない." }
+          ]
+        }]
+      }
+    },
+    {
       "files": ["src/apps/**"],
       "rules": {
         "no-restricted-imports": ["error", {

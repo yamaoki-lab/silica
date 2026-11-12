@@ -1,6 +1,7 @@
 // mount: 要素の中にデスクトップを描き, セッションを立ち上げ, アプリケーションを登録して自動起動する.
 import { createRoot } from 'react-dom/client';
 import { WindowStore } from '../agate/store.ts';
+import { bootElementId } from '../boot/ids.ts';
 import { loadSession } from '../session/index.ts';
 import { sessionWasmSize, sessionWasmUrl } from '../session/wasm.ts';
 import type { MountOptions, WindowId } from './app.ts';
@@ -27,6 +28,8 @@ export async function mount(el: HTMLElement, { apps }: MountOptions): Promise<vo
   await new Promise<void>((resolve) => {
     createRoot(el).render(<Desktop store={store} titleOf={(id) => titles.get(id) ?? ''} onReady={resolve} />);
   });
+  // デスクトップが描けたので, 起動画面を消す. スプラッシュスクリーンを入れるまでは, この画面をここまで出しておく.
+  el.ownerDocument.getElementById(bootElementId)?.remove();
   for (const { app, autostart } of entries) {
     if (autostart) void launch(session, app);
   }
