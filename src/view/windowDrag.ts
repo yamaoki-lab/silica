@@ -4,6 +4,32 @@ import { DragGesture } from './drag.ts';
 
 type Point = { x: number; y: number };
 
+// 操作できる要素. HTML の仕様の "interactive content" に揃える (tabindex の付いた要素もこれに入る).
+// role="button" 等で作ったボタンも, キーボードで操作できるよう tabindex を持つので, ここに当たる.
+const CONTROLS = [
+  'a[href]',
+  'audio[controls]',
+  'button',
+  'details',
+  'embed',
+  'iframe',
+  'img[usemap]',
+  'input:not([type="hidden"])',
+  'label',
+  'select',
+  'textarea',
+  'video[controls]',
+  '[tabindex]',
+].join(', ');
+
+// ネイティブのタイトルバーと同じく, タイトルバーの中の操作できる要素の上で押した時は, ドラッグを始めずその要素に任せる.
+// タイトルバー自身とその外側は見ない. ウインドウの枠がフォーカスのために tabindex を持っても, ドラッグは止まらない.
+function isOnControl(target: EventTarget | null, handle: HTMLElement): boolean {
+  if (!(target instanceof Element)) return false;
+  const control = target.closest(CONTROLS);
+  return control !== null && control !== handle && handle.contains(control);
+}
+
 // 返した関数で外す.
 export function attachWindowDrag<Id>(handle: HTMLElement, store: WindowStore<Id>, id: Id): () => void {
   const doc = handle.ownerDocument;
@@ -27,7 +53,7 @@ export function attachWindowDrag<Id>(handle: HTMLElement, store: WindowStore<Id>
   // タイトルバーに届き, タイトルバーの中のボタン (閉じるボタン等) が押せなくなる.
   // 動き始めるまでは document 上でポインタを追跡し, 遊びを超える前にタイトルバーの外へ出ても追えるようにする.
   const onDown = (event: PointerEvent) => {
-    if (gesture !== undefined) return;
+    if (gesture !== undefined || isOnControl(event.target, handle)) return;
     const bounds = store.get(id);
     const next = DragGesture.begin(event);
     if (bounds === undefined || next === undefined) return;
