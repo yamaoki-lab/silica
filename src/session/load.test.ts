@@ -44,6 +44,21 @@ describe('loadSession', () => {
     expect(progress.at(-3)).toEqual({ stage: 'fetch', loaded: wasm.length, total: undefined });
   });
 
+  test('別のオリジンの応答では, Content-Encoding が無くても Content-Length を全体の大きさにしない', async () => {
+    // Content-Encoding が Access-Control-Expose-Headers に無く見えない時と同じく, 圧縮した後の大きさだけが見えている.
+    const response = chunked({ 'content-length': String(Math.ceil(wasm.length / 2)) });
+    Object.defineProperty(response, 'type', { value: 'cors' });
+    const fetches = (await progressOf(response)).filter((p) => p.stage === 'fetch');
+    expect(fetches.every((p) => p.total === undefined)).toBe(true);
+  });
+
+  test('読んだバイト数が全体の大きさを超えたら, それ以降は全体の大きさを伝えない', async () => {
+    const half = Math.ceil(wasm.length / 2);
+    const fetches = (await progressOf(chunked({ 'content-length': String(half) }))).filter((p) => p.stage === 'fetch');
+    expect(fetches.map((p) => p.total)).toEqual([undefined, half, undefined, undefined]);
+    expect(fetches.every((p) => p.total === undefined || (p.loaded ?? 0) <= p.total)).toBe(true);
+  });
+
   test('渡された大きさは, 応答の見出しより先に使う', async () => {
     const progress = await progressOf(chunked({ 'content-encoding': 'gzip' }), wasm.length);
     expect(progress.at(-3)).toEqual({ stage: 'fetch', loaded: wasm.length, total: wasm.length });

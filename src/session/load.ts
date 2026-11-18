@@ -10,6 +10,7 @@ export interface LoadProgress {
   // 取得の時だけ. 読んだバイト数 (展開した後).
   loaded?: number;
   // 取得の時だけ. 全体のバイト数 (展開した後). 分からない時は省く.
+  // 読んだバイト数が超えた時は当たっていなかったので, それ以降は省く.
   total?: number;
 }
 
@@ -32,8 +33,12 @@ export async function loadSession(
   if (!response.ok) {
     throw new Error(`セッションの wasm を取得できなかった (${response.status})`);
   }
-  const total = options.size ?? uncompressedLength(response);
-  const bytes = await readAll(response, (loaded) => report({ stage: 'fetch', loaded, total }));
+  let total = options.size ?? uncompressedLength(response);
+  const bytes = await readAll(response, (loaded) => {
+    // 割合が 1 を超えないよう, 当たっていなかった全体の大きさは, それ以降は分からないものとする.
+    if (total !== undefined && loaded > total) total = undefined;
+    report({ stage: 'fetch', loaded, total });
+  });
 
   report({ stage: 'compile' });
   const module = await WebAssembly.compile(bytes);
@@ -50,7 +55,10 @@ export async function loadSession(
 }
 
 // 圧縮していない時だけ, Content-Length が展開した後の大きさになる.
+// 別のオリジンの応答 (cors) では, Content-Encoding は Access-Control-Expose-Headers に無いと見えない.
+// 圧縮しているか分からないので, 同じオリジンの応答 (basic) とページが作った応答 (default) の時だけ使う.
 function uncompressedLength(response: Response): number | undefined {
+  if (response.type !== 'basic' && response.type !== 'default') return undefined;
   const encoding = response.headers.get('content-encoding');
   if (encoding !== null && encoding !== 'identity') return undefined;
   const length = Number(response.headers.get('content-length') ?? Number.NaN);
