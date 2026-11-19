@@ -151,3 +151,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# ブラウザテスト (pnpm test:browser) で撮影した画像
+/test-results/
