@@ -3,6 +3,7 @@
 // ブラウザは --project で選ぶ (pnpm test は unit のみを動かし, pnpm test:browser はローカル環境の 2 つを動かす).
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
+import type { BrowserContext } from 'playwright';
 import type { BrowserCommand } from 'vitest/node';
 import silica from './src/vite/index.ts';
 
@@ -32,6 +33,25 @@ const mouse: BrowserCommand<[steps: MouseStep[]]> = async (context, steps) => {
   }
 };
 
+// テストがアクセスできるホスト. テストサーバは localhost 上にある.
+const localHosts = ['localhost', '127.0.0.1', '[::1]'];
+const allowedHosts = new WeakMap<BrowserContext, Set<string>>();
+
+// 結果がネットワークに左右されないよう, localhost 以外のホストへのリクエストを拒否する (たとえば S2 は Typekit から日本語フォントを読み込む).
+// 別のホストが必要なテストではそのホストを渡す. 通過させたリクエストは, Vitest のモックなど他のハンドラへ進む.
+const limitNetwork: BrowserCommand<[hosts?: string[]]> = async ({ context }, hosts = []) => {
+  let allowed = allowedHosts.get(context);
+  if (allowed === undefined) {
+    allowed = new Set(localHosts);
+    allowedHosts.set(context, allowed);
+    const current = allowed;
+    await context.route('**/*', (route) =>
+      current.has(new URL(route.request().url()).hostname) ? route.fallback() : route.abort('blockedbyclient'),
+    );
+  }
+  for (const host of hosts) allowed.add(host);
+};
+
 const browser = (name: string, browser: 'chromium' | 'firefox' | 'webkit', channel?: string) => ({
   name,
   browser,
@@ -56,11 +76,12 @@ export default defineConfig({
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.ts', 'src/**/*.browser.test.tsx'],
+          setupFiles: ['./src/testdata/setup.ts'],
           browser: {
             enabled: true,
             // 漢字が日本の字体で描画されるよう, テストページに lang="ja" を指定する.
             testerHtmlPath: './src/testdata/tester.html',
-            commands: { mouse },
+            commands: { mouse, limitNetwork },
             // CSS px 単位でのページのサイズ. ウインドウがデフォルトのサイズで開いて動き回る余裕がある一般的な大きさ.
             viewport: { width: 1280, height: 720 },
             // ウインドウを表示するかどうかはデフォルトに任せる (CI でのみヘッドレスになる).
