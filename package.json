@@ -62,7 +62,8 @@
     "prepack": "pnpm build",
     "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
-    "test": "pnpm gen && pnpm build:wasm && vitest run"
+    "test": "pnpm gen && pnpm build:wasm && vitest run --project=unit",
+    "test:browser": "pnpm gen && pnpm build:wasm && vitest run --project=chrome --project=webkit"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.74.0",
@@ -70,8 +71,10 @@
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vitest/browser-playwright": "5.1.0",
     "binaryen": "132.0.0",
     "oxlint": "^1.85.0",
+    "playwright": "1.65.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "ts-proto": "2.18.0",
