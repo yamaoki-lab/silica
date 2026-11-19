@@ -36,7 +36,8 @@ const browser = (name: string, browser: 'chromium' | 'firefox' | 'webkit', chann
   name,
   browser,
   // HiDPI ディスプレイと同様に, 2 倍の倍率で描画する.
-  provider: playwright({ launchOptions: { channel }, contextOptions: { deviceScaleFactor: 2 } }),
+  // silica のほとんどのユーザと同様に, ブラウザを日本語に設定する. S2 はブラウザの言語から Provider に lang を設定するため, ページの lang="ja" を上書きしてしまう.
+  provider: playwright({ launchOptions: { channel }, contextOptions: { deviceScaleFactor: 2, locale: 'ja-JP' } }),
 });
 
 export default defineConfig({
