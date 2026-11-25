@@ -45,6 +45,12 @@
       }
     },
     {
+      "files": ["src/**/*.browser.test.ts", "src/**/*.browser.test.tsx", "src/testdata/**"],
+      "rules": {
+        "no-restricted-globals": "off"
+      }
+    },
+    {
       "files": ["src/agate/**"],
       "rules": {
         "no-restricted-imports": ["error", {
