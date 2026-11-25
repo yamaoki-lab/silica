@@ -152,5 +152,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# ブラウザテスト (pnpm test:browser) で撮影した画像
+# ブラウザテスト (pnpm test:browser) が撮影した画像 (ローカル環境の基準画像を含む)
 /test-results/
+
+# Vitest の添付ファイル (スクリーンショットの差分)
+/.vitest/

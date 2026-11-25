@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from 'vitest';
-import { commands, userEvent } from 'vitest/browser';
+import { commands, page, userEvent } from 'vitest/browser';
 import type { MouseStep } from '../../vitest.config.ts';
 import { openTestWindow } from '../testdata/openTestWindow.ts';
 
@@ -72,6 +72,12 @@ const withButton = async (run: (button: HTMLButtonElement, clicks: () => number)
     button.remove();
   }
 };
+
+// 以前に作成した部品の見た目が気づかないうちに崩れないよう, 開いた直後のウインドウを基準画像と比較する.
+// 他のテストがウインドウを動かす前に画像を撮影するため, このテストを最初に実行する.
+test('ウインドウを描画する', async () => {
+  await expect.element(page.elementLocator(titleBar.parentElement!)).toMatchScreenshot('window');
+});
 
 test('タイトルからのドラッグでウインドウが動く', async () => {
   const before = position();
