@@ -63,7 +63,7 @@
     "typecheck": "pnpm gen && tsc -b",
     "lint": "oxlint",
     "test": "pnpm gen && pnpm build:wasm && vitest run --project=unit",
-    "test:browser": "pnpm gen && pnpm build:wasm && vitest run --project=chrome --project=webkit"
+    "test:browser": "pnpm gen && pnpm build:wasm && vitest run --project=chrome --no-file-parallelism && vitest run --project=webkit --no-file-parallelism"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.74.0",
