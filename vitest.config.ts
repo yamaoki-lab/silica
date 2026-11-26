@@ -93,6 +93,7 @@ export default defineConfig({
               toMatchScreenshot: {
                 // CI で撮影した基準画像のみをコミットする (#20). ローカル環境では OS のバージョンとブラウザのチャネルが CI と異なるため, 画像が一致しない.
                 // ローカル環境では, 基準画像を Git が無視するディレクトリに置き, 実行ごとに前回のローカル実行と比較する.
+                // chrome と chromium はどちらも browserName が chromium なので同じパスになるが, ローカル環境では chrome だけを (pnpm test:browser), CI では chromium だけを実行するため区別しない.
                 resolveScreenshotPath: ({ arg, ext, root, screenshotDirectory, testFileDirectory, testFileName, browserName, platform }) =>
                   process.env.CI
                     ? resolve(root, testFileDirectory, screenshotDirectory, testFileName, `${arg}-${browserName}-${platform}${ext}`)
