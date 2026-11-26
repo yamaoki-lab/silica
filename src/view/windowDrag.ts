@@ -76,8 +76,11 @@ export function attachWindowDrag<Id>(handle: HTMLElement, store: WindowStore<Id>
   };
 
   // 離した時も, 途切れた時 (pointercancel, lostpointercapture) も, 残りを先に当ててその位置で終える.
+  // 指で押すと, ブラウザは押された要素 (タイトルの文字など) に暗黙にポインタをキャプチャする. それをタイトルバーへ移すと,
+  // 元の要素に lostpointercapture が届くため, 途切れたと見るのはタイトルバー自身がキャプチャを失った時だけにする.
   const onEnd = (event: PointerEvent) => {
     if (gesture === undefined || event.pointerId !== gesture.pointerId) return;
+    if (event.type === 'lostpointercapture' && event.target !== handle) return;
     gesture = undefined;
     stopTracking();
     if (frame !== 0) view.cancelAnimationFrame(frame);
