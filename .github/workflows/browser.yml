@@ -20,7 +20,9 @@ jobs:
   browser:
     # PR の画面と Ruleset に出る確認の名前.
     name: browser
-    runs-on: macos-latest
+    # macOS のバージョンが変わると日本語のフォントの描画が変わり, 基準画像と一致しなくなるため, バージョンを固定する.
+    # バージョンを上げる時は, 同じ PR で基準画像を撮り直す.
+    runs-on: macos-26
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -52,11 +54,13 @@ jobs:
       # 日本語の Hiragino フォントのファイル名は NFD になっているため, 検索する前に変換する. 1 つも見つからない場合は失敗させる.
       - run: ls /System/Library/Fonts | iconv -f UTF-8-MAC -t UTF-8 | grep -E 'Hiragino|ヒラギノ'
       - run: pnpm exec vitest run --project=chromium --project=firefox --project=webkit ${{ github.event_name == 'workflow_dispatch' && '--update' || '' }}
+      # スクリーンショットが基準画像と一致しない場合, 基準画像, 実際の画像, および差分をアップロードする.
+      # 開発者は毎日作業しており, 落ちた翌日までには見るため, 保持期間は 1 日で足りる. 消えた後に必要になれば, CI を再実行すれば同じものが得られる.
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
+        if: failure()
         with:
-          name: fonts
-          path: test-results/fonts
+          name: screenshot-diffs
+          path: .vitest/attachments
           retention-days: 1
           if-no-files-found: ignore
       # 手動で実行した時は, 変更または追加された基準画像だけを, パスを保ったまま収集する.

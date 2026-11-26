@@ -1,6 +1,7 @@
 // テストの設定. unit テストは node (unit) で動き, *.browser.test.ts という名前のテストはブラウザで動く.
 // ブラウザテストは Playwright で動かす. ローカル環境では Google Chrome と WebKit, CI では macOS 上の Chromium, Firefox, および WebKit を使う (#20).
 // ブラウザは --project で選ぶ (pnpm test は unit のみを動かし, pnpm test:browser はローカル環境の 2 つを動かす).
+import { resolve } from 'node:path';
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 import type { BrowserContext } from 'playwright';
@@ -88,6 +89,17 @@ export default defineConfig({
             // ウインドウを表示する場合でも Vitest UI は表示しない. UI があると, ページが実際のウインドウのサイズと倍率に従うため,
             // deviceScaleFactor を設定できず, ページが縮小表示されて画像やマウスの位置が変わってしまう.
             ui: false,
+            expect: {
+              toMatchScreenshot: {
+                // CI で撮影した基準画像のみをコミットする (#20). ローカル環境では OS のバージョンとブラウザのチャネルが CI と異なるため, 画像が一致しない.
+                // ローカル環境では, 基準画像を Git が無視するディレクトリに置き, 実行ごとに前回のローカル実行と比較する.
+                // chrome と chromium はどちらも browserName が chromium なので同じパスになるが, ローカル環境では chrome だけを (pnpm test:browser), CI では chromium だけを実行するため区別しない.
+                resolveScreenshotPath: ({ arg, ext, root, screenshotDirectory, testFileDirectory, testFileName, browserName, platform }) =>
+                  process.env.CI
+                    ? resolve(root, testFileDirectory, screenshotDirectory, testFileName, `${arg}-${browserName}-${platform}${ext}`)
+                    : resolve(root, 'test-results/screenshots', testFileDirectory, testFileName, `${arg}-${browserName}-${platform}${ext}`),
+              },
+            },
             instances: [
               browser('chrome', 'chromium', 'chrome'),
               browser('chromium', 'chromium'),
