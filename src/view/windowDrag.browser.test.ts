@@ -97,6 +97,39 @@ for (const type of ['pen', 'touch'] as const) {
   });
 }
 
+// ドラッグの途中でタイトルバーがキャプチャを失った時は, pointerup を待たずにそこでドラッグを終える (#49).
+// mouse コマンドはボタンの状態を呼び出しをまたいで保つため, 押して動かした所で一度止め, キャプチャを外してから続きを動かす.
+test('ドラッグの途中でタイトルバーがキャプチャを失うとドラッグが終わる', async () => {
+  const from = centerOf(title);
+  let pointerId: number | undefined;
+  const onDown = (event: PointerEvent) => (pointerId ??= event.pointerId);
+  document.addEventListener('pointerdown', onDown, true);
+  const before = position();
+  try {
+    await commands.mouse([
+      { type: 'move', x: from.x, y: from.y },
+      { type: 'down' },
+      { type: 'move', x: from.x + 50, y: from.y + 30, steps: 10 },
+    ]);
+  } finally {
+    document.removeEventListener('pointerdown', onDown, true);
+  }
+  try {
+    if (pointerId === undefined) throw new Error('ページが pointerdown を受け取らなかった');
+    await nextFrame();
+    // 遊びを超えて動き始め, タイトルバーがキャプチャしていることを先に確かめる.
+    expect(titleBar.hasPointerCapture(pointerId)).toBe(true);
+    const moved = position();
+    expect(moved).not.toEqual(before);
+    titleBar.releasePointerCapture(pointerId);
+    await commands.mouse([{ type: 'move', x: from.x + 100, y: from.y + 60, steps: 10 }]);
+    await nextFrame();
+    expect(position()).toEqual(moved);
+  } finally {
+    await commands.mouse([{ type: 'up' }]);
+  }
+});
+
 test('タイトルバーのボタンをクリックするとボタンに届く', async () => {
   await withButton(async (button, clicks) => {
     const before = position();
