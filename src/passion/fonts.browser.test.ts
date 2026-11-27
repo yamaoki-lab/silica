@@ -26,7 +26,8 @@ test('日本語のテキストを描画する', async () => {
 // すべての字 (空白を含む) が, 中国の字体のフォントや別のフォントに置き換わらず, 1 つの日本語フォントで描画されている.
 test.runIf(server.browser === 'chromium')('日本語のテキストを日本語フォントで描画する', async () => {
   titleBar.firstElementChild!.setAttribute('data-test-title', '');
+  // 使用されるフォントは, 環境で利用可能なフォントに依存する.
   expect(await commands.platformFonts('[data-test-title]')).toEqual([
-    { familyName: 'Hiragino Kaku Gothic ProN', glyphCount: text.length },
+    { familyName: expect.toBeOneOf(['Heisei Maru Gothic Std W4', 'Hiragino Sans']), glyphCount: text.length },
   ]);
 });

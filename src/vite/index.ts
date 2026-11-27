@@ -4,6 +4,7 @@
 import { statSync } from 'node:fs';
 import type { Plugin, UserConfig } from 'vite';
 import { type BootOptions, silicaBoot } from './boot.ts';
+import { silicaJapaneseFonts } from './japanese-fonts.ts';
 import { silicaMacros } from './macros.ts';
 
 export type { BootColor, BootOptions } from './boot.ts';
@@ -20,7 +21,7 @@ const s2Styles = {
 };
 
 export default function silica(options: SilicaOptions = {}): Plugin[] {
-  return [...silicaMacros(), silicaConfig(), silicaBoot(options.boot)];
+  return [...silicaMacros(), silicaJapaneseFonts(), silicaConfig(), silicaBoot(options.boot)];
 }
 
 // 使う側の設定に混ぜる値. 使う側が指定しているものは, そちらを優先する.
